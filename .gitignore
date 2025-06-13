@@ -2,6 +2,7 @@
 backend/__pycache__/
 backend/api/__pycache__/
 backend/services/__pycache__/
+backend/utils/__pycache__/
 mcp_server/__pycache__/
 frontend/node_modules/
 logs/
