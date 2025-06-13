@@ -1,10 +1,7 @@
 import yaml
-import json
 import aiofiles
-from pathlib import Path
 from typing import Dict, Any, List, Optional
 from datetime import datetime
-import asyncio
 from backend.config import settings
 from backend.models import Prompt
 
@@ -48,6 +45,7 @@ class FileService:
             created_at=datetime.fromtimestamp(stat.st_ctime),
             updated_at=datetime.fromtimestamp(stat.st_mtime),
             file_path=str(file_path),
+            creator_username=data.get("creator_username"),
         )
 
     async def save_prompt(self, prompt_data: Dict[str, Any]) -> Prompt:
@@ -62,6 +60,7 @@ class FileService:
             "tags": prompt_data.get("tags", []),
             "remark": prompt_data.get("remark", ""),
             "status": prompt_data.get("status", "enabled"),
+            "creator_username": prompt_data.get("creator_username"), # Add creator_username
         }
 
         # 保存到文件

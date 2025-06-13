@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Table, Button, Space, Tag, Input, Select, message, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, CopyOutlined, PoweroffOutlined } from '@ant-design/icons';
 import { promptAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 const { Search } = Input;
 const { Option } = Select;
@@ -11,6 +12,7 @@ const PromptList = ({ onEdit }) => {
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState('');
   const [searchIn, setSearchIn] = useState(['title', 'tags', 'content']);
+  const { user } = useAuth(); // Get current user
 
   // 加载prompts
   const loadPrompts = async () => {
@@ -133,11 +135,13 @@ const PromptList = ({ onEdit }) => {
             size="small"
             icon={<EditOutlined />}
             onClick={() => onEdit(record)}
+            disabled={!user || record.creator_username !== user.username}
           />
           <Button
             size="small"
             icon={<PoweroffOutlined />}
             onClick={() => handleToggleStatus(record.title)}
+            disabled={!user || record.creator_username !== user.username}
           />
           <Popconfirm
             title="确定要删除吗？"
@@ -147,6 +151,7 @@ const PromptList = ({ onEdit }) => {
               size="small"
               danger
               icon={<DeleteOutlined />}
+              disabled={!user || record.creator_username !== user.username}
             />
           </Popconfirm>
         </Space>

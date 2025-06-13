@@ -10,6 +10,7 @@ class PromptBase(BaseModel):
     tags: List[str] = Field(default_factory=list, description="标签列表")
     remark: Optional[str] = Field(None, description="备注说明")
     status: Optional[str] = Field(None, description="启用/禁用")
+    creator_username: Optional[str] = Field(None, description="创建者用户名")
 
 
 class PromptCreate(PromptBase):
