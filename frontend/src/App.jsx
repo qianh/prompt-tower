@@ -1,35 +1,48 @@
 import React, { useState } from "react";
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Layout, Button, Modal } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, LogoutOutlined } from "@ant-design/icons";
 import PromptList from "./components/PromptList";
 import PromptEditor from "./components/PromptEditor";
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import ProtectedRoute from './components/ProtectedRoute';
+import { useAuth } from './context/AuthContext';
 import { promptAPI } from "./services/api";
 import "./App.css";
 
 const { Header, Content } = Layout;
 
-function App() {
+// This is the main application layout for authenticated users
+const MainAppLayout = () => {
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [currentPrompt, setCurrentPrompt] = useState(null);
   const [refreshList, setRefreshList] = useState(0);
+  const { user, logout } = useAuth(); // Get user and logout function
 
-  // 打开编辑器
   const handleEdit = (prompt = null) => {
     setCurrentPrompt(prompt);
     setEditModalVisible(true);
   };
 
-  // 保存prompt
   const handleSave = async (values) => {
-    if (currentPrompt) {
-      // 更新
-      await promptAPI.update(currentPrompt.title, values);
-    } else {
-      // 创建
-      await promptAPI.create(values);
+    try {
+      if (currentPrompt) {
+        await promptAPI.update(currentPrompt.title, values);
+      } else {
+        await promptAPI.create(values);
+      }
+      setEditModalVisible(false);
+      setRefreshList((prev) => prev + 1);
+    } catch (error) {
+      console.error("Save prompt failed:", error);
+      // Consider showing a message to the user
     }
-    setEditModalVisible(false);
-    setRefreshList((prev) => prev + 1);
+  };
+
+  const handleLogout = () => {
+    logout();
+    // AuthProvider and ProtectedRoute will handle redirecting to login
   };
 
   return (
@@ -42,13 +55,24 @@ function App() {
         }}
       >
         <h1 style={{ color: "white", margin: 0 }}>Prompt管理系统</h1>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => handleEdit()}
-        >
-          新建Prompt
-        </Button>
+        <div>
+          {user && <span style={{ color: 'white', marginRight: '15px' }}>Welcome, {user.username}!</span>}
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => handleEdit()}
+            style={{ marginRight: '10px' }}
+          >
+            新建Prompt
+          </Button>
+          <Button
+            danger
+            icon={<LogoutOutlined />}
+            onClick={handleLogout}
+          >
+            Logout
+          </Button>
+        </div>
       </Header>
 
       <Content style={{ padding: "24px" }}>
@@ -69,6 +93,24 @@ function App() {
         />
       </Modal>
     </Layout>
+  );
+};
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/*" element={<ProtectedRoute />}>
+        {/* Nested routes under ProtectedRoute render inside its Outlet */}
+        {/* MainAppLayout will be the default for authenticated users at "/" and any sub-routes not matched*/}
+        <Route index element={<MainAppLayout />} />
+        {/* Example for future nested protected routes: */}
+        {/* <Route path="dashboard" element={<DashboardPage />} /> */}
+         {/* A catch-all for any other authenticated routes, rendering MainAppLayout or redirecting */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Route>
+    </Routes>
   );
 }
 

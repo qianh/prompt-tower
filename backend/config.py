@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     API_HOST: str = "0.0.0.0"
     API_PORT: int = 8000
     API_PREFIX: str = "/api/v1"
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
     # 文件存储配置
     PROMPT_TEMPLATE_DIR: Path = Path("prompt-template")

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Depends
 from typing import List, Optional
 from backend.models import (
     Prompt,
@@ -6,8 +6,10 @@ from backend.models import (
     PromptUpdate,
     SearchRequest,
     SearchResponse,
+    User, # Added for type hinting current_user
 )
 from backend.services.file_service import FileService
+from backend.api.auth import get_current_user # Import the dependency
 
 router = APIRouter(prefix="/prompts", tags=["prompts"])
 file_service = FileService()
@@ -40,7 +42,7 @@ async def get_prompt(title: str):
 
 
 @router.post("/", response_model=Prompt)
-async def create_prompt(prompt: PromptCreate):
+async def create_prompt(prompt: PromptCreate, current_user: User = Depends(get_current_user)):
     """创建新prompt"""
     # 检查标题是否已存在
     existing = await file_service.read_prompt(prompt.title)
@@ -51,7 +53,7 @@ async def create_prompt(prompt: PromptCreate):
 
 
 @router.put("/{title}", response_model=Prompt)
-async def update_prompt(title: str, update_data: PromptUpdate):
+async def update_prompt(title: str, update_data: PromptUpdate, current_user: User = Depends(get_current_user)):
     """更新prompt"""
     updated = await file_service.update_prompt(
         title, update_data.model_dump(exclude_unset=True)
@@ -62,7 +64,7 @@ async def update_prompt(title: str, update_data: PromptUpdate):
 
 
 @router.delete("/{title}")
-async def delete_prompt(title: str):
+async def delete_prompt(title: str, current_user: User = Depends(get_current_user)):
     """删除prompt"""
     success = await file_service.delete_prompt(title)
     if not success:
@@ -80,7 +82,7 @@ async def search_prompts(request: SearchRequest):
 
 
 @router.post("/{title}/toggle-status", response_model=Prompt)
-async def toggle_status(title: str):
+async def toggle_status(title: str, current_user: User = Depends(get_current_user)):
     """切换prompt状态"""
     prompt = await file_service.read_prompt(title)
     if not prompt:

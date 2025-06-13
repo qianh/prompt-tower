@@ -56,4 +56,33 @@ class SearchRequest(BaseModel):
 class SearchResponse(BaseModel):
     results: List[Prompt]
     total: int
+\
     query: str
+
+class UserBase(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50, description="Username, must be unique")
+
+class UserCreate(UserBase):
+    password: str = Field(..., min_length=6, description="User password")
+
+class UserInDB(UserBase):
+    id: Optional[int] = None # Will be set by the database or storage mechanism
+    hashed_password: str
+
+    class Config:
+        from_attributes = True
+
+class User(UserBase):
+    id: int # Or str if using UUIDs
+    # email: Optional[str] = None # Add other fields as needed
+
+    class Config:
+        from_attributes = True
+
+# Token models for JWT
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[str] = None

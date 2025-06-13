@@ -1,0 +1,10 @@
+{
+    "users": [
+        {
+            "username": "john",
+            "id": 1,
+            "hashed_password": "$2b$12$vJ2s1rk1wK2bJ6l/OwPd6uDTwi8zv6PscvsPmLenNPnFvMcMQm.wK"
+        }
+    ],
+    "next_id": 1
+}

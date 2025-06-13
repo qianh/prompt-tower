@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.config import settings
-from backend.api import prompts, llm
+from backend.api import prompts, llm, auth
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -21,6 +21,7 @@ app.add_middleware(
 # 注册路由
 app.include_router(prompts.router, prefix=settings.API_PREFIX)
 app.include_router(llm.router, prefix=settings.API_PREFIX)
+app.include_router(auth.router) # Auth routes typically don't have the /api/v1 prefix
 
 @app.get("/")
 async def root():
