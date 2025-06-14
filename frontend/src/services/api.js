@@ -114,3 +114,15 @@ export const authAPI = {
     return !!localStorage.getItem('authToken');
   },
 };
+
+export const tagAPI = {
+  list: async () => {
+    const response = await api.get('/tags');
+    return response.data; // Assuming this returns List[models.Tag] which is like [{name: "tag1"}, {name: "tag2"}]
+  },
+
+  create: async (tagData) => { // tagData should be { name: "new_tag_name" }
+    const response = await api.post('/tags', tagData);
+    return response.data; // Assuming this returns models.Tag which is like {name: "new_tag_name"}
+  },
+};

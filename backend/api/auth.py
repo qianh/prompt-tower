@@ -1,14 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from datetime import timedelta
 
-from backend.models import UserCreate, User, Token, UserInDB
-from backend.utils.security import get_password_hash, verify_password
-from backend.services.user_service import get_user_by_username, create_user_in_db
-from backend.utils.jwt_helpers import create_access_token, decode_access_token
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 
-from backend.models import TokenData #, UserInDB (already imported)
-from backend.config import settings # Moved to config.py
+from backend.config import settings  # Moved to config.py
+from backend.models import TokenData  # , UserInDB (already imported)
+from backend.models import Token, User, UserCreate, UserInDB
+from backend.services.user_service import (create_user_in_db,
+                                           get_user_by_username)
+from backend.utils.jwt_helpers import create_access_token, decode_access_token
+from backend.utils.security import get_password_hash, verify_password
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -24,7 +25,7 @@ async def signup(user_data: UserCreate):
     if db_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Username already registered"
+            detail="Username already registered",
         )
     new_user = await create_user_in_db(user_data)
     if not new_user:
@@ -32,9 +33,10 @@ async def signup(user_data: UserCreate):
         # but as a safeguard / if create_user_in_db has other failure modes.
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Could not create user"
+            detail="Could not create user",
         )
     return User(id=new_user.id, username=new_user.username)
+
 
 @router.post("/login", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
@@ -45,12 +47,13 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
+
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+
 
 # Example of a protected route (to be added to other APIs later)
 # @router.get("/users/me", response_model=User)
@@ -66,7 +69,8 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     user = await get_user_by_username(token_data.username)
     if user is None:
         raise credentials_exception
-    return User(id=user.id, username=user.username) # Return Pydantic User model
+    return User(id=user.id, username=user.username)  # Return Pydantic User model
+
 
 @router.get("/users/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_user)):

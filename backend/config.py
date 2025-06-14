@@ -1,8 +1,9 @@
 import os
 from pathlib import Path
 from typing import Optional
-from pydantic_settings import BaseSettings
+
 from dotenv import load_dotenv
+from pydantic_settings import BaseSettings
 
 # 显式加载 .env 文件
 env_path = Path(__file__).parent.parent / ".env"

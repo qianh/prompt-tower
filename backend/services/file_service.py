@@ -1,7 +1,9 @@
-import yaml
-import aiofiles
-from typing import Dict, Any, List, Optional
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+import aiofiles
+import yaml
+
 from backend.config import settings
 from backend.models import Prompt
 
@@ -60,7 +62,9 @@ class FileService:
             "tags": prompt_data.get("tags", []),
             "remark": prompt_data.get("remark", ""),
             "status": prompt_data.get("status", "enabled"),
-            "creator_username": prompt_data.get("creator_username"), # Add creator_username
+            "creator_username": prompt_data.get(
+                "creator_username"
+            ),  # Add creator_username
         }
 
         # 保存到文件

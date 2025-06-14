@@ -1,10 +1,13 @@
-from fastapi import APIRouter, HTTPException
 from typing import List
+
+from fastapi import APIRouter, HTTPException
+
 from backend.config import settings  # 添加这行导入
 from backend.models import PromptOptimizeRequest, PromptOptimizeResponse
 from backend.services.llm_service import llm_service
 
 router = APIRouter(prefix="/llm", tags=["llm"])
+
 
 @router.post("/optimize", response_model=PromptOptimizeResponse)
 async def optimize_prompt(request: PromptOptimizeRequest):
@@ -16,14 +19,20 @@ async def optimize_prompt(request: PromptOptimizeRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"优化失败: {str(e)}")
 
+
 @router.get("/providers")
 async def get_providers():
     """获取可用的LLM提供商"""
     providers = llm_service.get_available_providers()
     return {
         "providers": providers,
-        "default": settings.DEFAULT_LLM if settings.DEFAULT_LLM in providers else providers[0] if providers else None
+        "default": (
+            settings.DEFAULT_LLM
+            if settings.DEFAULT_LLM in providers
+            else providers[0] if providers else None
+        ),
     }
+
 
 @router.get("/providers/{provider}/test")
 async def test_provider(provider: str):
@@ -32,8 +41,9 @@ async def test_provider(provider: str):
     return {
         "provider": provider,
         "available": is_available,
-        "message": "连接成功" if is_available else "连接失败"
+        "message": "连接成功" if is_available else "连接失败",
     }
+
 
 @router.get("/config")
 async def get_llm_config():
@@ -46,6 +56,6 @@ async def get_llm_config():
         "models": {
             "gemini": settings.GEMINI_MODEL,
             "qwen": settings.QWEN_MODEL,
-            "deepseek": settings.DEEPSEEK_MODEL
-        }
+            "deepseek": settings.DEEPSEEK_MODEL,
+        },
     }
