@@ -37,7 +37,7 @@ const PromptListPage = () => {
       <Row
         justify="space-between"
         align="middle"
-        style={{ backgroundColor: '#fff', marginBottom: '16px', padding: '16px 0' }}
+        style={{ backgroundColor: '#fff', marginBottom: '16px', padding: '16px' }}
       >
         <Col>
           <Typography.Title level={4} style={{ margin: 0 }}>
