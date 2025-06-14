@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, Col, Row, Statistic, message, Spin, Typography } from 'antd';
-import { FileTextOutlined, TagsOutlined, RiseOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { FileTextOutlined, TagsOutlined, RiseOutlined, CheckCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { promptAPI, tagAPI } from '../services/api'; // Added tagAPI
+import { promptAPI, tagAPI, userAPI } from '../services/api'; 
 
 const DashboardPage = () => {
   const [totalPrompts, setTotalPrompts] = useState(0);
@@ -10,15 +10,17 @@ const DashboardPage = () => {
   const [totalUsage, setTotalUsage] = useState(0);
   const [currentlyEnabled, setCurrentlyEnabled] = useState(0);
   const [enabledPercentage, setEnabledPercentage] = useState(0);
+  const [totalUsers, setTotalUsers] = useState(0); 
   const [loading, setLoading] = useState(true);
 
   const fetchDashboardData = useCallback(async () => {
     setLoading(true);
     try {
-      // Fetch prompts and global tags in parallel
-      const [promptsResponse, globalTagsResponse] = await Promise.all([
+      // Fetch prompts, global tags in parallel
+      const [promptsResponse, globalTagsResponse, usersResponse] = await Promise.all([
         promptAPI.list(),
-        tagAPI.list() // Fetches the list of global tag objects e.g. [{name: "tag1"}]
+        tagAPI.list(), 
+        userAPI.list()
       ]);
 
       // Total Prompts
@@ -27,9 +29,12 @@ const DashboardPage = () => {
       // Total Tags (from global tag list)
       setTotalTags(globalTagsResponse.length);
 
+      // Total Users
+      setTotalUsers(usersResponse.length);
+
       // Total Usage (assuming usage_count field exists on each prompt object)
       const usageSum = promptsResponse.reduce((acc, prompt) => {
-        return acc + (prompt.usage_count || 0); // Default to 0 if usage_count is not present or falsy
+        return acc + (prompt.usage_count || 0); 
       }, 0);
       setTotalUsage(usageSum);
 
@@ -52,6 +57,7 @@ const DashboardPage = () => {
       setTotalUsage(0);
       setCurrentlyEnabled(0);
       setEnabledPercentage(0);
+      setTotalUsers(0);
     } finally {
       setLoading(false);
     }
@@ -77,6 +83,13 @@ const DashboardPage = () => {
             <Link to="/tags">
               <Card hoverable>
                 <Statistic title="Total Tags" value={totalTags} loading={loading} prefix={<TagsOutlined />} />
+              </Card>
+            </Link>
+          </Col>
+          <Col xs={24} sm={12} md={6}>
+            <Link to="/users">
+              <Card hoverable>
+                <Statistic title="Total Users" value={totalUsers} loading={loading} prefix={<UserOutlined />} />
               </Card>
             </Link>
           </Col>

@@ -132,3 +132,15 @@ export const tagAPI = {
     return response.data; // Expected to be List[str] (updated list of all tags)
   },
 };
+
+export const userAPI = {
+  list: async () => {
+    const response = await api.get('/users/');
+    return response.data;
+  },
+
+  getByUsername: async (username) => {
+    const response = await api.get(`/users/${username}/`);
+    return response.data;
+  },
+};

@@ -156,3 +156,19 @@ class PromptService:
         )
         return updated_prompt
 
+
+async def get_prompt_by_username_count(username: str) -> int:
+    """获取指定用户创建的提示词数量"""
+    try:
+        file_service = FileService()
+        prompts = await file_service.list_prompts()
+        
+        # 安全计数
+        count = 0
+        for prompt in prompts:
+            if hasattr(prompt, 'creator_username') and prompt.creator_username == username:
+                count += 1
+        
+        return count
+    except Exception:
+        return 0

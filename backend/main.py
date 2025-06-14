@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.api import auth, llm, prompts, tags  # Added tags
+from backend.api import auth, llm, prompts, tags, users
 from backend.config import settings
 
 app = FastAPI(
@@ -36,6 +36,7 @@ app.include_router(prompts.router, prefix=settings.API_PREFIX)
 app.include_router(llm.router, prefix=settings.API_PREFIX)
 app.include_router(auth.router)  # Auth routes typically don't have the /api/v1 prefix
 app.include_router(tags.router, prefix=settings.API_PREFIX)  # Added tags router
+app.include_router(users.router, prefix=settings.API_PREFIX)  # Added users router
 
 
 @app.get("/")
