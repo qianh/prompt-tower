@@ -1,0 +1,164 @@
+/* Dashboard 页面整体样式 */
+.dashboard-page {
+  background: transparent !important;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.dashboard-page .ant-typography {
+  color: #374151 !important;
+}
+
+.dashboard-page .ant-typography-title {
+  color: #1f2937 !important;
+  font-weight: 600 !important;
+}
+
+/* Dashboard 页面自定义样式 */
+.dashboard-card-prompts {
+  background: linear-gradient(135deg, #64748b 0%, #475569 50%, #374151 100%) !important;
+  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(71, 85, 105, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+.dashboard-card-prompts:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 32px rgba(71, 85, 105, 0.25), 0 0 20px rgba(148, 163, 184, 0.3) !important;
+  border-color: rgba(148, 163, 184, 0.6) !important;
+}
+
+.dashboard-card-tags {
+  background: linear-gradient(135deg, #64748b 0%, #475569 50%, #374151 100%) !important;
+  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(71, 85, 105, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+.dashboard-card-tags:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 32px rgba(71, 85, 105, 0.25), 0 0 20px rgba(148, 163, 184, 0.3) !important;
+  border-color: rgba(148, 163, 184, 0.6) !important;
+}
+
+.dashboard-card-users {
+  background: linear-gradient(135deg, #64748b 0%, #475569 50%, #374151 100%) !important;
+  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(71, 85, 105, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+.dashboard-card-users:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 32px rgba(71, 85, 105, 0.25), 0 0 20px rgba(148, 163, 184, 0.3) !important;
+  border-color: rgba(148, 163, 184, 0.6) !important;
+}
+
+.dashboard-card-usage {
+  background: linear-gradient(135deg, #64748b 0%, #475569 50%, #374151 100%) !important;
+  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(71, 85, 105, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+.dashboard-card-usage:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 32px rgba(71, 85, 105, 0.25), 0 0 20px rgba(148, 163, 184, 0.3) !important;
+  border-color: rgba(148, 163, 184, 0.6) !important;
+}
+
+.dashboard-card-enabled {
+  background: linear-gradient(135deg, #64748b 0%, #475569 50%, #374151 100%) !important;
+  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(71, 85, 105, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+.dashboard-card-enabled:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 32px rgba(71, 85, 105, 0.25), 0 0 20px rgba(148, 163, 184, 0.3) !important;
+  border-color: rgba(148, 163, 184, 0.6) !important;
+}
+
+/* 卡片整体内容样式优化 */
+.dashboard-card-prompts .ant-card-body,
+.dashboard-card-tags .ant-card-body,
+.dashboard-card-users .ant-card-body,
+.dashboard-card-usage .ant-card-body,
+.dashboard-card-enabled .ant-card-body {
+  background: transparent !important;
+  padding: 24px !important;
+  text-align: center !important;
+}
+
+/* 统一的深色背景卡片文字样式 */
+.dashboard-card-prompts .ant-statistic-title,
+.dashboard-card-tags .ant-statistic-title,
+.dashboard-card-users .ant-statistic-title,
+.dashboard-card-usage .ant-statistic-title,
+.dashboard-card-enabled .ant-statistic-title {
+  color: rgba(203, 213, 225, 0.8) !important;
+  font-weight: 500 !important;
+  font-size: 16px !important;
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  margin-bottom: 8px !important;
+}
+
+.dashboard-card-prompts .ant-statistic-content,
+.dashboard-card-tags .ant-statistic-content,
+.dashboard-card-users .ant-statistic-content,
+.dashboard-card-usage .ant-statistic-content,
+.dashboard-card-enabled .ant-statistic-content {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.dashboard-card-prompts .ant-statistic-content .ant-statistic-content-prefix,
+.dashboard-card-tags .ant-statistic-content .ant-statistic-content-prefix,
+.dashboard-card-users .ant-statistic-content .ant-statistic-content-prefix,
+.dashboard-card-usage .ant-statistic-content .ant-statistic-content-prefix,
+.dashboard-card-enabled .ant-statistic-content .ant-statistic-content-prefix {
+  display: flex !important;
+  align-items: center !important;
+  margin-right: 8px !important;
+}
+
+.dashboard-card-prompts .ant-statistic-content-value,
+.dashboard-card-tags .ant-statistic-content-value,
+.dashboard-card-users .ant-statistic-content-value,
+.dashboard-card-usage .ant-statistic-content-value,
+.dashboard-card-enabled .ant-statistic-content-value {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  font-size: 36px !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  line-height: 1.2 !important;
+}
+
+/* 统计组件整体样式 */
+.dashboard-card-prompts .ant-statistic,
+.dashboard-card-tags .ant-statistic,
+.dashboard-card-users .ant-statistic,
+.dashboard-card-usage .ant-statistic,
+.dashboard-card-enabled .ant-statistic {
+  margin-top: 8px !important;
+}
+
+/* 卡片标题样式 */
+.dashboard-card h3 {
+  color: #1f2937 !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+}
+.dashboard-card .ant-card-meta-title {
+  color: #1f2937 !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+}

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Card, Col, Row, Statistic, message, Spin, Typography } from 'antd';
+import { Card, Row, Col, Statistic, Spin, Typography, message } from 'antd';
 import { FileTextOutlined, TagsOutlined, RiseOutlined, CheckCircleOutlined, UserOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { promptAPI, tagAPI, userAPI } from '../services/api'; 
+import './DashboardPage.css';
 
 const DashboardPage = () => {
   const [totalPrompts, setTotalPrompts] = useState(0);
@@ -12,6 +13,13 @@ const DashboardPage = () => {
   const [enabledPercentage, setEnabledPercentage] = useState(0);
   const [totalUsers, setTotalUsers] = useState(0); 
   const [loading, setLoading] = useState(true);
+
+  // 科技感图标样式
+  const techIconStyle = { 
+    color: 'rgba(147, 197, 253, 0.9)', 
+    fontSize: '28px',
+    filter: 'drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2))'
+  };
 
   const fetchDashboardData = useCallback(async () => {
     setLoading(true);
@@ -68,39 +76,78 @@ const DashboardPage = () => {
   }, [fetchDashboardData]);
 
   return (
-    <div style={{ padding: '20px' }}>
-      <Typography.Title level={2} style={{ marginBottom: '24px' }}>Dashboard Overview</Typography.Title>
+    <div className="dashboard-page" style={{ padding: '20px' }}>
+      <div style={{ marginBottom: '32px' }}>
+        <Typography.Title 
+          level={2}
+          style={{ 
+            margin: 0, 
+            color: '#1f2937',
+            fontSize: '28px',
+            fontWeight: '700',
+            textShadow: '0 1px 3px rgba(255, 255, 255, 0.8)',
+            letterSpacing: '-0.5px'
+          }}
+        >
+          数据面板总览
+        </Typography.Title>
+      </div>
       <Spin spinning={loading} tip="Loading dashboard data...">
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={6}>
             <Link to="/prompts">
-              <Card hoverable>
-                <Statistic title="Total Prompts" value={totalPrompts} loading={loading} prefix={<FileTextOutlined />} />
+              <Card className="dashboard-card-prompts" hoverable>
+                <Statistic 
+                  title="提示词总数" 
+                  value={totalPrompts} 
+                  loading={loading} 
+                  prefix={<FileTextOutlined style={techIconStyle} />}
+                />
               </Card>
             </Link>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Link to="/tags">
-              <Card hoverable>
-                <Statistic title="Total Tags" value={totalTags} loading={loading} prefix={<TagsOutlined />} />
+              <Card className="dashboard-card-tags" hoverable>
+                <Statistic 
+                  title="标签总数" 
+                  value={totalTags} 
+                  loading={loading} 
+                  prefix={<TagsOutlined style={techIconStyle} />}
+                />
               </Card>
             </Link>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Link to="/users">
-              <Card hoverable>
-                <Statistic title="Total Users" value={totalUsers} loading={loading} prefix={<UserOutlined />} />
+              <Card className="dashboard-card-users" hoverable>
+                <Statistic 
+                  title="用户总数" 
+                  value={totalUsers} 
+                  loading={loading} 
+                  prefix={<UserOutlined style={techIconStyle} />}
+                />
               </Card>
             </Link>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic title="Total Usage" value={totalUsage} loading={loading} prefix={<RiseOutlined />} />
+            <Card className="dashboard-card-usage" hoverable>
+              <Statistic 
+                title="总使用次数" 
+                value={totalUsage} 
+                loading={loading} 
+                prefix={<RiseOutlined style={techIconStyle} />}
+              />
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
-            <Card>
-              <Statistic title={`Currently Enabled (${enabledPercentage}%)`} value={currentlyEnabled} loading={loading} prefix={<CheckCircleOutlined />} />
+            <Card className="dashboard-card-enabled" hoverable>
+              <Statistic 
+                title={`当前启用 (${enabledPercentage}%)`} 
+                value={currentlyEnabled} 
+                loading={loading} 
+                prefix={<CheckCircleOutlined style={techIconStyle} />}
+              />
             </Card>
           </Col>
         </Row>

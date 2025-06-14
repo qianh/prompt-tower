@@ -7,9 +7,16 @@ const { Content } = Layout;
 
 const AuthenticatedLayout = () => {
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ 
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #cbd5e1 100%)'
+      }}>
       <SharedHeader />
-      <Content style={{ padding: '0', marginTop: '0' }}> {/* Adjusted padding and margin */}
+      <Content style={{ 
+          padding: '0', 
+          marginTop: '0',
+          background: 'transparent'
+        }}> {/* Adjusted padding and margin */}
         <Outlet />
       </Content>
     </Layout>
