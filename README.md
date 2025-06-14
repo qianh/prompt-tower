@@ -74,7 +74,7 @@ cd prompt-management-system
 **启动后端服务:**
 ```bash
 # 从项目根目录
-uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn backend.main:app --host 0.0.0.0 --port 8010 --reload
 ```
 
 **启动前端开发服务:**
@@ -209,11 +209,11 @@ prompt-management-system/
 前端界面：http://localhost:3000
   - 登录页: http://localhost:3000/login
   - 注册页: http://localhost:3000/signup
-后端API：http://localhost:8000
-  - Auth API: http://localhost:8000/auth/...
-  - Prompts API: http://localhost:8000/api/v1/prompts/... (部分受保护)
-  - LLM API: http://localhost:8000/api/v1/llm/...
-MCP Server：http://localhost:8001
+后端API：http://localhost:8010
+  - Auth API: http://localhost:8010/auth/...
+  - Prompts API: http://localhost:8010/api/v1/prompts/... (部分受保护)
+  - LLM API: http://localhost:8010/api/v1/llm/...
+MCP Server：http://localhost:8011
 ```
 
 ## mcp配置
@@ -222,7 +222,7 @@ MCP Server：http://localhost:8001
 {
   "mcpServers": {
     "prompt-management": {
-      "url": "http://localhost:8001/mcp",
+      "url": "http://localhost:8011/mcp",
       "transport": "http"
     }
   }

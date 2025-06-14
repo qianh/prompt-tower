@@ -29,7 +29,7 @@ The system is composed of three main parts:
     *   API interactions are managed through `frontend/src/services/api.js`, which uses `axios`. An interceptor automatically attaches JWTs to requests.
     *   Authentication state (user, token) is managed globally via `AuthContext` (`frontend/src/context/AuthContext.jsx`).
     *   Page components are in `frontend/src/pages/` and reusable UI components in `frontend/src/components/`.
-    *   The `proxy` setting in `frontend/package.json` directs API requests to the backend at `http://localhost:8000` during development (note: backend runs on 8000, `start.sh` script has a typo for backend port 8010).
+    *   The `proxy` setting in `frontend/package.json` directs API requests to the backend at `http://localhost:8010` during development (note: backend runs on 8010, `start.sh` script has a typo for backend port 8010).
 
 3.  **MCP Server (Python):** Located in the `mcp_server/` directory.
     *   A Python-based server implementing the Model Context Protocol.
@@ -77,7 +77,7 @@ The system is composed of three main parts:
 
 1.  **Start Backend Server (from project root):**
     ```bash
-    uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
+    uvicorn backend.main:app --host 0.0.0.0 --port 8010 --reload
     ```
     (Note: `scripts/start.sh` uses `uv run python -m backend.main` which might also work but the `uvicorn` command is more standard for FastAPI development.)
 
@@ -92,7 +92,7 @@ The system is composed of three main parts:
     ```bash
     python mcp_server/server.py
     ```
-    The MCP Server will run on `http://localhost:8001`.
+    The MCP Server will run on `http://localhost:8011`.
 
 (Alternatively, `scripts/start.sh` attempts to run all three services.)
 
@@ -149,7 +149,7 @@ The system is composed of three main parts:
 
 *   The backend uses `uv` for dependency management. Ensure `uv` is installed and used as per `pyproject.toml`.
 *   The `SECRET_KEY` environment variable in the `.env` file is critical for JWT authentication security. Ensure it is strong and kept secret.
-*   The frontend relies on the `proxy` setting in `package.json` to route API calls to the backend during development. The default backend port is 8000.
+*   The frontend relies on the `proxy` setting in `package.json` to route API calls to the backend during development. The default backend port is 8010.
 *   When adding new backend dependencies, update `pyproject.toml`.
 *   When adding new frontend dependencies, update `frontend/package.json`.
 *   The `scripts/install.sh` and `scripts/start.sh` provide a way to set up and run the full application stack.

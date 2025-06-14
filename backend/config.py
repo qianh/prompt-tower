@@ -20,7 +20,7 @@ class Settings(BaseSettings):
 
     # API配置
     API_HOST: str = "0.0.0.0"
-    API_PORT: int = 8000
+    API_PORT: int = 8010
     API_PREFIX: str = "/api/v1"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
@@ -45,7 +45,7 @@ class Settings(BaseSettings):
 
     # MCP Server配置
     MCP_SERVER_HOST: str = "0.0.0.0"
-    MCP_SERVER_PORT: int = 8001
+    MCP_SERVER_PORT: int = 8011
 
     # 日志配置
     LOG_LEVEL: str = "INFO"
