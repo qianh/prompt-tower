@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Table, Button, Space, Tag, Input, Select, message, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, CopyOutlined, PoweroffOutlined } from '@ant-design/icons';
-import { promptAPI } from '../services/api';
+import { promptAPI, tagAPI } from '../services/api'; // Import tagAPI
 import { useAuth } from '../context/AuthContext'; // Import useAuth
 
 const { Search } = Input;
@@ -11,71 +11,91 @@ const PromptList = ({ onEdit }) => {
   const [prompts, setPrompts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchValue, setSearchValue] = useState('');
-  const [searchIn, setSearchIn] = useState(['title', 'tags', 'content']);
+  // const [searchIn, setSearchIn] = useState(['title', 'tags', 'content']); // searchIn is not used for text search currently
+  const [allTags, setAllTags] = useState([]);
+  const [selectedTag, setSelectedTag] = useState(undefined); // To store the selected tag for filtering
   const { user } = useAuth(); // Get current user
 
-  // 加载prompts
-  const loadPrompts = async () => {
+  const loadPrompts = useCallback(async (tagFilter) => {
     setLoading(true);
     try {
-      const data = await promptAPI.list();
+      const params = {};
+      if (tagFilter) {
+        params.tag = tagFilter;
+      }
+      const data = await promptAPI.list(params);
       setPrompts(data);
+      setSearchValue(''); 
     } catch (error) {
-      message.error('加载失败：' + error.message);
+      message.error('加载 prompts 失败：' + error.message);
     } finally {
       setLoading(false);
     }
-  };
+  }, []); 
 
-  // 搜索prompts
+  const loadTags = useCallback(async () => {
+    try {
+      const tagsData = await tagAPI.list(); // Use tagAPI.list()
+      setAllTags(tagsData || []);
+    } catch (error) {
+      message.error('加载标签失败：' + error.message);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadPrompts();
+    loadTags();
+  }, [loadPrompts, loadTags]);
+
   const handleSearch = async (value) => {
-    if (!value) {
-      loadPrompts();
+    const query = value.trim();
+    if (!query) {
+      loadPrompts(selectedTag);
       return;
     }
-
     setLoading(true);
+    setSelectedTag(undefined); 
     try {
-      const result = await promptAPI.search(value, searchIn);
-      setPrompts(result.results);
+      // Defaulting searchIn to all fields if not specified or UI element removed
+      const result = await promptAPI.search(query, ['title', 'tags', 'content']); 
+      setPrompts(result.results || []);
     } catch (error) {
       message.error('搜索失败：' + error.message);
+      setPrompts([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // 复制prompt
+  const handleTagFilterChange = (tag) => {
+    setSelectedTag(tag);
+    loadPrompts(tag);
+  };
+
   const handleCopy = (record) => {
     navigator.clipboard.writeText(record.content);
     message.success('已复制到剪贴板');
   };
 
-  // 删除prompt
   const handleDelete = async (title) => {
     try {
       await promptAPI.delete(title);
       message.success('删除成功');
-      loadPrompts();
+      loadPrompts(selectedTag); 
     } catch (error) {
       message.error('删除失败：' + error.message);
     }
   };
 
-  // 切换状态
   const handleToggleStatus = async (title) => {
     try {
       await promptAPI.toggleStatus(title);
       message.success('状态已更新');
-      loadPrompts();
+      loadPrompts(selectedTag); 
     } catch (error) {
       message.error('操作失败：' + error.message);
     }
   };
-
-  useEffect(() => {
-    loadPrompts();
-  }, []);
 
   const columns = [
     {
@@ -88,9 +108,9 @@ const PromptList = ({ onEdit }) => {
       title: '标签',
       dataIndex: 'tags',
       key: 'tags',
-      render: (tags) => (
+      render: (tagsArray) => (
         <>
-          {tags.map(tag => (
+          {tagsArray && tagsArray.map(tag => (
             <Tag key={tag} color="blue">{tag}</Tag>
           ))}
         </>
@@ -118,7 +138,7 @@ const PromptList = ({ onEdit }) => {
       dataIndex: 'updated_at',
       key: 'updated_at',
       width: 180,
-      render: (time) => new Date(time).toLocaleString(),
+      render: (time) => time ? new Date(time).toLocaleString() : '-',
     },
     {
       title: '操作',
@@ -163,24 +183,26 @@ const PromptList = ({ onEdit }) => {
     <div>
       <Space style={{ marginBottom: 16 }}>
         <Search
-          placeholder="搜索prompt"
+          placeholder="搜索prompt (标题、标签、内容)"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
           onSearch={handleSearch}
           style={{ width: 300 }}
+          allowClear
         />
         <Select
-          mode="multiple"
-          style={{ width: 300 }}
-          placeholder="选择搜索范围"
-          value={searchIn}
-          onChange={setSearchIn}
+          style={{ width: 200 }}
+          placeholder="按标签过滤"
+          value={selectedTag}
+          onChange={handleTagFilterChange}
+          allowClear
         >
-          <Option value="title">标题</Option>
-          <Option value="tags">标签</Option>
-          <Option value="content">内容</Option>
+          <Option value={undefined}>所有标签</Option>
+          {allTags.map(tag => (
+            <Option key={tag} value={tag}>{tag}</Option>
+          ))}
         </Select>
-        <Button type="primary" onClick={loadPrompts}>
+        <Button type="primary" onClick={() => loadPrompts(selectedTag)}>
           刷新
         </Button>
       </Space>

@@ -29,9 +29,20 @@ async def list_prompts(
     if status:
         prompts = [p for p in prompts if p.status == status]
     if tag:
-        prompts = [p for p in prompts if tag in p.tags]
+        prompts = [p for p in prompts if p.tags and tag in p.tags] # Added check for p.tags existence
 
     return prompts
+
+
+@router.get("/tags/", response_model=List[str])
+async def get_all_tags():
+    """获取所有不重复的tags"""
+    try:
+        tags = await prompt_service.get_all_tags()
+        return tags
+    except Exception as e:
+        # Log the exception e if a logger is available
+        raise HTTPException(status_code=500, detail="获取标签失败")
 
 
 @router.get("/{title}", response_model=Prompt)

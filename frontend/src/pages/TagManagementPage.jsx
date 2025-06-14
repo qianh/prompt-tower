@@ -13,13 +13,13 @@ const TagManagementPage = () => {
   const fetchGlobalTags = useCallback(async () => {
     setLoading(true);
     try {
-      const globalTagsModels = await tagAPI.list(); // Returns List[models.Tag] e.g. [{name: "tag1"}]
-      const tagNames = globalTagsModels.map(tagModel => tagModel.name).sort();
-      setTags(tagNames);
+      const globalTagsList = await tagAPI.list(); // Now returns List[str]
+      // Ensure it's an array and sort it before setting state. Also handles if null/undefined is returned.
+      setTags( (Array.isArray(globalTagsList) ? globalTagsList : []).sort((a, b) => a.localeCompare(b)) );
     } catch (error) {
       console.error('Failed to load global tags:', error);
       message.error('Failed to load global tags. Please try again.');
-      setTags([]);
+      setTags([]); // Set to empty array on error
     } finally {
       setLoading(false);
     }

@@ -6,6 +6,7 @@ from backend.models import Prompt, PromptCreate, PromptUpdate
 from backend.services.file_service import FileService
 from backend.utils.validators import (validate_content, validate_tags,
                                       validate_title)
+from backend.services import tag_service # Import the tag_service module
 
 
 class PromptService:
@@ -17,7 +18,7 @@ class PromptService:
     async def create_prompt(
         self, prompt_data: PromptCreate, creator_username: str
     ) -> Prompt:
-        """创建新的prompt"""
+        """创建新的prompt，并将其中的tags同步到全局tags.json"""
         # 验证数据
         if not validate_title(prompt_data.title):
             raise ValueError("标题格式不正确")
@@ -36,12 +37,25 @@ class PromptService:
         # 保存prompt
         data_to_save = prompt_data.model_dump()
         data_to_save["creator_username"] = creator_username
-        return await self.file_service.save_prompt(data_to_save)
+        saved_prompt = await self.file_service.save_prompt(data_to_save)
+
+        # 同步tags到全局tags.json
+        if saved_prompt and saved_prompt.tags:
+            for tag in saved_prompt.tags:
+                try:
+                    await tag_service.add_tag(tag) # Use tag_service.add_tag
+                except ValueError as e:
+                    # Log or handle tag validation error if necessary, e.g., empty tag from prompt
+                    print(f"Skipping invalid tag '{tag}' from prompt '{saved_prompt.title}': {e}")
+                except Exception as e:
+                    print(f"Error adding tag '{tag}' for prompt '{saved_prompt.title}' to global list: {e}")
+        
+        return saved_prompt
 
     async def update_prompt(
         self, title: str, update_data: PromptUpdate, current_username: str
     ) -> Optional[Prompt]:
-        """更新prompt"""
+        """更新prompt，并将其中的tags同步到全局tags.json"""
         # 获取原始prompt
         original_prompt = await self.file_service.read_prompt(title)
         if not original_prompt:
@@ -66,7 +80,19 @@ class PromptService:
         if "creator_username" in update_dict:
             del update_dict["creator_username"]
 
-        return await self.file_service.update_prompt(title, update_dict)
+        updated_prompt = await self.file_service.update_prompt(title, update_dict)
+
+        # 同步tags到全局tags.json
+        if updated_prompt and updated_prompt.tags:
+            for tag in updated_prompt.tags:
+                try:
+                    await tag_service.add_tag(tag) # Use tag_service.add_tag
+                except ValueError as e:
+                    print(f"Skipping invalid tag '{tag}' from prompt '{updated_prompt.title}': {e}")
+                except Exception as e:
+                    print(f"Error adding tag '{tag}' for prompt '{updated_prompt.title}' to global list: {e}")
+
+        return updated_prompt
 
     async def delete_prompt(self, title: str, current_username: str) -> bool:
         """删除prompt，校验操作者是否为创建者"""
@@ -87,7 +113,6 @@ class PromptService:
         if not original_prompt:
             raise HTTPException(status_code=404, detail="Prompt不存在")
 
-        # 仅所有者可以切换状态
         if original_prompt.creator_username != current_username:
             raise HTTPException(status_code=403, detail="无权限修改此Prompt的状态")
 
@@ -98,3 +123,16 @@ class PromptService:
         """获取所有启用的prompts"""
         all_prompts = await self.file_service.list_prompts()
         return [p for p in all_prompts if p.status == "enabled"]
+
+    async def get_all_tags_from_yaml_files(self) -> List[str]:
+        """获取所有不重复的tags (从YAML文件，用于初始同步)
+           This method is intended to be called at application startup.
+        """
+        all_prompts = await self.file_service.list_prompts()
+        all_tags = set()
+        for prompt in all_prompts:
+            if prompt.tags:
+                for tag_from_yaml in prompt.tags:
+                    if isinstance(tag_from_yaml, str) and tag_from_yaml.strip(): # Ensure it is a valid string tag
+                        all_tags.add(tag_from_yaml.strip())
+        return sorted(list(all_tags))

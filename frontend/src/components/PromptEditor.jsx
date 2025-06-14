@@ -1,18 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Select, Button, Space, message, Spin, Alert } from "antd";
-import { llmAPI } from "../services/api";
+import { llmAPI, tagAPI } from "../services/api"; // Import tagAPI
 
 const { TextArea } = Input;
-const { Option } = Select;
+const { Option } = Select; // Option might not be needed if using options prop for Select
 
 const PromptEditor = ({ prompt, onSave, onCancel }) => {
   const [form] = Form.useForm();
   const [optimizing, setOptimizing] = useState(false);
   const [optimizeError, setOptimizeError] = useState(null);
+  const [globalTags, setGlobalTags] = useState([]); // State for storing global tags
+  const [loadingTags, setLoadingTags] = useState(false);
 
   useEffect(() => {
-    // 加载LLM提供商
+    // 加载LLM提供商 (original logic)
     llmAPI.getProviders().then((data) => {
+      // console.log("LLM Providers:", data);
+    }).catch(error => {
+      console.error("Failed to load LLM providers:", error);
+      // message.error("加载LLM提供商失败"); // Optional: user-facing error
+    });
+
+    // 加载全局标签
+    setLoadingTags(true);
+    tagAPI.list().then((tags) => {
+      setGlobalTags(Array.isArray(tags) ? tags : []);
+    }).catch(error => {
+      console.error("Failed to load global tags:", error);
+      message.error("加载全局标签列表失败");
+      setGlobalTags([]); // Ensure it's an array on error
+    }).finally(() => {
+      setLoadingTags(false);
     });
 
     // 如果是编辑模式，填充表单
@@ -20,10 +38,13 @@ const PromptEditor = ({ prompt, onSave, onCancel }) => {
       form.setFieldsValue({
         title: prompt.title,
         content: prompt.content,
-        tags: prompt.tags,
+        tags: prompt.tags || [], // Ensure tags is an array
         remark: prompt.remark,
         status: prompt.status,
       });
+    } else {
+      form.resetFields(); // Reset for new prompt
+      form.setFieldsValue({ status: "enabled", tags: [] }); // Default values for new prompt
     }
   }, [prompt, form]);
 
@@ -34,15 +55,12 @@ const PromptEditor = ({ prompt, onSave, onCancel }) => {
       message.warning("请先输入prompt内容");
       return;
     }
-
     setOptimizing(true);
     setOptimizeError(null);
-
     try {
       const result = await llmAPI.optimize(content);
       form.setFieldValue("content", result.optimized);
-
-      if (result.suggestions.length > 0) {
+      if (result.suggestions && result.suggestions.length > 0) {
         message.info(
           <div>
             <p>优化建议：</p>
@@ -57,13 +75,12 @@ const PromptEditor = ({ prompt, onSave, onCancel }) => {
       }
     } catch (error) {
       console.error("优化失败:", error);
-      setOptimizeError(error.message || "优化失败，请稍后重试");
-
-      // 如果是超时错误，给出特别提示
-      if (error.message && error.message.includes("超时")) {
+      const errorMsg = error.response?.data?.detail || error.message || "优化失败，请稍后重试";
+      setOptimizeError(errorMsg);
+      if (errorMsg.includes("超时")) {
         message.warning("LLM处理时间较长，请耐心等待或尝试使用其他模型", 5);
       } else {
-        message.error("优化失败：" + error.message);
+        message.error("优化失败：" + errorMsg);
       }
     } finally {
       setOptimizing(false);
@@ -73,13 +90,24 @@ const PromptEditor = ({ prompt, onSave, onCancel }) => {
   // 保存prompt
   const handleSubmit = async (values) => {
     try {
-      await onSave(values);
+      // Ensure tags are an array, even if cleared in the form
+      const payload = {
+        ...values,
+        tags: Array.isArray(values.tags) ? values.tags : [],
+      };
+      await onSave(payload);
       message.success("保存成功");
       form.resetFields();
+      form.setFieldsValue({ status: "enabled", tags: [] }); // Reset to defaults for new prompt
+      // Optionally, refresh global tags if a new tag might have been added
+      // This might be redundant if backend automatically syncs and other components re-fetch
+      tagAPI.list().then(tags => setGlobalTags(Array.isArray(tags) ? tags : [])).catch(console.error);
     } catch (error) {
-      message.error("保存失败：" + error.message);
+      message.error("保存失败：" + (error.response?.data?.detail || error.message));
     }
   };
+
+  const tagOptions = globalTags.map(tag => ({ label: tag, value: tag }));
 
   return (
     <div>
@@ -94,7 +122,7 @@ const PromptEditor = ({ prompt, onSave, onCancel }) => {
         />
       )}
 
-      <Spin spinning={optimizing} tip="AI正在优化中，请耐心等待（最长60秒）...">
+      <Spin spinning={optimizing || loadingTags} tip={loadingTags ? "加载标签中..." : "AI正在优化中，请耐心等待（最长60秒）..."}>
         <Form
           form={form}
           layout="vertical"
@@ -138,8 +166,12 @@ const PromptEditor = ({ prompt, onSave, onCancel }) => {
           <Form.Item name="tags" label="标签">
             <Select
               mode="tags"
-              placeholder="输入标签，按回车确认"
               style={{ width: "100%" }}
+              placeholder="选择或输入标签，按回车确认"
+              options={tagOptions} // Provide global tags as options
+              filterOption={(inputValue, option) => 
+                option.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+              } // Basic case-insensitive filtering for dropdown
             />
           </Form.Item>
 
@@ -148,7 +180,7 @@ const PromptEditor = ({ prompt, onSave, onCancel }) => {
           </Form.Item>
 
           <Form.Item name="status" label="状态">
-            <Select>
+            <Select defaultValue="enabled">
               <Option value="enabled">启用</Option>
               <Option value="disabled">禁用</Option>
             </Select>

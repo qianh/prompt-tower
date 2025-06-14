@@ -61,6 +61,7 @@ export const promptAPI = {
     const response = await api.post(`/prompts/${title}/toggle-status`);
     return response.data;
   },
+  // Removed getAllTags from promptAPI as tagAPI.list() is now the unified source
 };
 
 export const llmAPI = {
@@ -117,12 +118,12 @@ export const authAPI = {
 
 export const tagAPI = {
   list: async () => {
-    const response = await api.get('/tags');
-    return response.data; // Assuming this returns List[models.Tag] which is like [{name: "tag1"}, {name: "tag2"}]
+    const response = await api.get('/tags'); 
+    return response.data; // Expected to be List[str]
   },
 
   create: async (tagData) => { // tagData should be { name: "new_tag_name" }
-    const response = await api.post('/tags', tagData);
-    return response.data; // Assuming this returns models.Tag which is like {name: "new_tag_name"}
+    const response = await api.post('/tags', tagData); // Backend expects { "name": "..." }
+    return response.data; // Expected to be List[str] (updated list of all tags)
   },
 };

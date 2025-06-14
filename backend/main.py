@@ -8,7 +8,7 @@ app = FastAPI(
     title=settings.APP_NAME, version=settings.APP_VERSION, debug=settings.DEBUG
 )
 
-from backend.services import sync_tags_from_prompts  # Added for startup event
+from backend.services.tag_service import sync_tags_from_prompts  # Corrected import for startup event
 
 
 # Startup event to sync tags
