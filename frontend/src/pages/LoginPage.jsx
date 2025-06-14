@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { Card, Typography, Row, Col } from 'antd';
 import LoginForm from '../components/LoginForm';
-import { useAuth } from '../context/AuthContext';
 
 const { Title, Paragraph } = Typography;
 

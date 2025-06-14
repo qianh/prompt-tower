@@ -8,13 +8,11 @@ const { Option } = Select;
 const PromptEditor = ({ prompt, onSave, onCancel }) => {
   const [form] = Form.useForm();
   const [optimizing, setOptimizing] = useState(false);
-  const [providers, setProviders] = useState([]);
   const [optimizeError, setOptimizeError] = useState(null);
 
   useEffect(() => {
     // 加载LLM提供商
     llmAPI.getProviders().then((data) => {
-      setProviders(data.providers || []);
     });
 
     // 如果是编辑模式，填充表单
