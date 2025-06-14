@@ -1,3 +1,7 @@
+html {
+  height: 100%;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -5,6 +9,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(to right top, #65dfc9, #6cdbeb);
+  min-height: 100vh;
 }
 
 code {
@@ -14,6 +20,7 @@ code {
 
 #root {
   height: 100%;
+  background: rgba(255, 255, 255, 0.1); /* Slight white tint for content readability */
 }
 
 /* 自定义滚动条 */
@@ -48,4 +55,22 @@ code {
 .ant-btn-primary:hover {
   background-color: #40a9ff;
   border-color: #40a9ff;
+}
+
+.liquid-glass-effect {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.ant-card {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
 }

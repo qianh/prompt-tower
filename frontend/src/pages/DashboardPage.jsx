@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Card, Col, Row, Statistic, message, Spin } from 'antd';
+import { Card, Col, Row, Statistic, message, Spin, Typography } from 'antd';
+import { FileTextOutlined, TagsOutlined, RiseOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { promptAPI, tagAPI } from '../services/api'; // Added tagAPI
 
@@ -8,6 +9,7 @@ const DashboardPage = () => {
   const [totalTags, setTotalTags] = useState(0);
   const [totalUsage, setTotalUsage] = useState(0);
   const [currentlyEnabled, setCurrentlyEnabled] = useState(0);
+  const [enabledPercentage, setEnabledPercentage] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const fetchDashboardData = useCallback(async () => {
@@ -35,6 +37,13 @@ const DashboardPage = () => {
       const enabledCount = promptsResponse.filter(p => p.status === 'enabled').length;
       setCurrentlyEnabled(enabledCount);
 
+      // Calculate and set enabled percentage
+      if (promptsResponse.length > 0) {
+        setEnabledPercentage(Math.round((enabledCount / promptsResponse.length) * 100));
+      } else {
+        setEnabledPercentage(0);
+      }
+
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
       message.error('Failed to load dashboard data. Please try again.');
@@ -42,6 +51,7 @@ const DashboardPage = () => {
       setTotalTags(0);
       setTotalUsage(0);
       setCurrentlyEnabled(0);
+      setEnabledPercentage(0);
     } finally {
       setLoading(false);
     }
@@ -53,30 +63,31 @@ const DashboardPage = () => {
 
   return (
     <div style={{ padding: '20px' }}>
+      <Typography.Title level={2} style={{ marginBottom: '24px' }}>Dashboard Overview</Typography.Title>
       <Spin spinning={loading} tip="Loading dashboard data...">
         <Row gutter={[16, 16]}>
           <Col xs={24} sm={12} md={6}>
             <Link to="/prompts">
               <Card hoverable>
-                <Statistic title="Total Prompts" value={totalPrompts} loading={loading} />
+                <Statistic title="Total Prompts" value={totalPrompts} loading={loading} prefix={<FileTextOutlined />} />
               </Card>
             </Link>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Link to="/tags">
               <Card hoverable>
-                <Statistic title="Total Tags" value={totalTags} loading={loading} />
+                <Statistic title="Total Tags" value={totalTags} loading={loading} prefix={<TagsOutlined />} />
               </Card>
             </Link>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Card>
-              <Statistic title="Total Usage" value={totalUsage} loading={loading} />
+              <Statistic title="Total Usage" value={totalUsage} loading={loading} prefix={<RiseOutlined />} />
             </Card>
           </Col>
           <Col xs={24} sm={12} md={6}>
             <Card>
-              <Statistic title="Currently Enabled" value={currentlyEnabled} loading={loading} />
+              <Statistic title={`Currently Enabled (${enabledPercentage}%)`} value={currentlyEnabled} loading={loading} prefix={<CheckCircleOutlined />} />
             </Card>
           </Col>
         </Row>
