@@ -136,3 +136,23 @@ class PromptService:
                     if isinstance(tag_from_yaml, str) and tag_from_yaml.strip(): # Ensure it is a valid string tag
                         all_tags.add(tag_from_yaml.strip())
         return sorted(list(all_tags))
+
+    async def increment_usage_count(self, title: str) -> Optional[Prompt]:
+        """增加指定prompt的使用次数"""
+        prompt = await self.file_service.read_prompt(title)
+        if not prompt:
+            # No need to raise HTTPException here if called internally, 
+            # but good if this service method could also be called directly from API in future.
+            # For now, let's assume API layer handles 404 if needed.
+            # Consider returning None or letting file_service.update_prompt handle it.
+            return None 
+
+        new_usage_count = prompt.usage_count + 1
+        # We need to ensure that update_prompt can handle just updating usage_count
+        # and that it correctly identifies the prompt by its title (which is the identifier here)
+        updated_prompt = await self.file_service.update_prompt(
+            original_title_identifier=title, 
+            update_data={"usage_count": new_usage_count}
+        )
+        return updated_prompt
+

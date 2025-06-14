@@ -12,6 +12,7 @@ class PromptBase(BaseModel):
     remark: Optional[str] = Field(None, description="备注说明")
     status: Optional[str] = Field(None, description="启用/禁用")
     creator_username: Optional[str] = Field(None, description="创建者用户名")
+    usage_count: int = Field(default=0, description="使用次数")
 
 
 class PromptCreate(PromptBase):
@@ -24,6 +25,7 @@ class PromptUpdate(BaseModel):
     tags: Optional[List[str]] = None
     remark: Optional[str] = None
     status: Optional[str] = None
+    usage_count: Optional[int] = None
 
 
 class Prompt(PromptBase):

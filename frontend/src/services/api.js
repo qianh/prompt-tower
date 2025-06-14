@@ -61,6 +61,11 @@ export const promptAPI = {
     const response = await api.post(`/prompts/${title}/toggle-status`);
     return response.data;
   },
+
+  incrementUsageCount: async (title) => {
+    const response = await api.post(`/prompts/${title}/increment-usage`);
+    return response.data;
+  },
   // Removed getAllTags from promptAPI as tagAPI.list() is now the unified source
 };
 

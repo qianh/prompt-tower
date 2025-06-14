@@ -52,6 +52,7 @@ class FileService:
             updated_at=datetime.fromtimestamp(stat.st_mtime),
             file_path=str(file_path),
             creator_username=data.get("creator_username"),
+            usage_count=data.get("usage_count", 0), # Default to 0 if not present
         )
 
     async def save_prompt(self, prompt_data: Dict[str, Any]) -> Prompt:
@@ -69,6 +70,7 @@ class FileService:
             "remark": prompt_data.get("remark", ""),
             "status": prompt_data.get("status", "enabled"),
             "creator_username": prompt_data.get("creator_username"),
+            "usage_count": prompt_data.get("usage_count", 0), # Default to 0 if not provided
         }
 
         async with aiofiles.open(file_path, "w", encoding="utf-8") as f:

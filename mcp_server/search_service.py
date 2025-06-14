@@ -1,6 +1,7 @@
 from typing import List, Dict, Any, Optional
 from backend.services.file_service import FileService
 import logging
+import httpx
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +73,20 @@ class SearchService:
         prompt = await self.file_service.read_prompt(title)
         if not prompt or prompt.status != "enabled":
             return None
+
+        # Increment usage count by calling the backend API
+        try:
+            async with httpx.AsyncClient() as client:
+                increment_url = f"http://localhost:8010/prompts/{prompt.title}/increment-usage"
+                response = await client.post(increment_url)
+                response.raise_for_status()  # Raise an exception for bad status codes
+                logger.info(f"Successfully incremented usage count for prompt: {prompt.title}")
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Error incrementing usage count for prompt {prompt.title} (HTTP {e.response.status_code}): {e.response.text}")
+        except httpx.RequestError as e:
+            logger.error(f"Request error while incrementing usage count for prompt {prompt.title}: {str(e)}")
+        except Exception as e:
+            logger.error(f"Unexpected error incrementing usage count for prompt {prompt.title}: {str(e)}")
 
         return {
             "title": prompt.title,

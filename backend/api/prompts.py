@@ -122,3 +122,14 @@ async def toggle_status(title: str, current_user: User = Depends(get_current_use
         return updated_prompt
     except ValueError as e:  # Should not happen
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.post("/{title}/increment-usage", response_model=Prompt)
+async def increment_prompt_usage_count(
+    title: str,
+    # current_user: User = Depends(get_current_user) # Authentication can be added later if required
+):
+    """增加prompt的使用次数"""
+    updated_prompt = await prompt_service.increment_usage_count(title=title)
+    if not updated_prompt:
+        raise HTTPException(status_code=404, detail="Prompt不存在或更新失败")
+    return updated_prompt
