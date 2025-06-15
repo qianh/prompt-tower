@@ -1,0 +1,106 @@
+/* UserManagementPage.css */
+
+/* CLAUDE CODE: Force dark color for main page title and its icon (Highly Specific CSS Attempt) */
+div.user-management-page h2#user-management-main-title.ant-typography,
+div.user-management-page h2#user-management-main-title.ant-typography span.anticon {
+  color: #374151 !important; /* 深黑色 */
+}
+.user-management-page {
+  padding: 20px;
+}
+.user-management-page .ant-card {
+  background: linear-gradient(135deg, #64748b 0%, #475569 50%, #374151 100%) !important;
+  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(71, 85, 105, 0.2) !important;
+  transition: all 0.3s ease !important;
+}
+
+.user-management-page .ant-card:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 32px rgba(71, 85, 105, 0.25), 0 0 20px rgba(148, 163, 184, 0.3) !important;
+  border-color: rgba(148, 163, 184, 0.6) !important;
+}
+
+.user-management-page .ant-card-body {
+  padding: 20px !important;
+  text-align: center; /* Ensure content like avatar and username are centered */
+}
+
+.user-management-page .ant-avatar {
+  background-color: #1890ff !important; /* Keep original avatar color or customize */
+  margin-bottom: 12px !important;
+}
+
+.user-management-page .ant-typography,
+.user-management-page .ant-statistic-title,
+.user-management-page .ant-statistic-content-value,
+.user-management-page .ant-typography-secondary {
+  color: rgba(203, 213, 225, 0.9) !important; /* Light text for dark background */
+}
+
+.user-management-page .ant-statistic-title {
+  font-weight: 500 !important;
+  font-size: 14px !important; /* Adjusted for card content */
+  letter-spacing: 0.5px !important;
+  text-transform: uppercase !important;
+  margin-bottom: 4px !important;
+}
+
+.user-management-page .ant-statistic-content-value {
+  font-weight: 700 !important;
+  font-size: 20px !important; /* Adjusted for card content */
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.user-management-page .ant-statistic-content .ant-statistic-content-prefix {
+  margin-right: 8px !important;
+  color: rgba(147, 197, 253, 0.9) !important; /* Tech icon color from dashboard */
+}
+
+
+.user-management-page .card-username {
+  color: #ffffff !important;
+  margin: 0 0 4px 0 !important;
+  font-weight: 600 !important;
+}
+
+.user-management-page .user-detail-section {
+  margin-top: 16px;
+}
+
+.user-management-page .user-footer-info {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(148, 163, 184, 0.2) !important; /* Lighter border for dark bg */
+  text-align: center;
+}
+
+.user-management-page .user-footer-info .ant-typography-secondary {
+  font-size: 12px !important;
+  color: rgba(203, 213, 225, 0.7) !important; /* Slightly dimmer for footer */
+}
+
+/* Ensure icons in statistics also have a contrasting color if needed */
+.user-management-page .ant-statistic .anticon {
+  color: rgba(147, 197, 253, 0.9) !important; /* Tech icon color */
+}
+
+.user-management-page .ant-card-head-title {
+ color: #1a1a1a !important; /* Changed to an even darker color */
+}
+
+.user-management-page .ant-card-head .anticon {
+  color: #1a1a1a !important; /* Match title color */
+}
+
+/* Specific overrides for title and text within the card if they don't inherit correctly */
+.user-management-page .ant-card .ant-typography-title,
+.user-management-page .ant-card .ant-typography-text {
+  color: rgba(203, 213, 225, 0.9) !important;
+}
+
+.user-management-page .ant-card .ant-typography-title.card-username {
+   color: #ffffff !important;
+}
