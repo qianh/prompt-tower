@@ -58,31 +58,31 @@
 }
 
 .dashboard-card-usage {
-  background: linear-gradient(135deg, #64748b 0%, #475569 50%, #374151 100%) !important;
-  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+  background: linear-gradient(135deg, #94a3b8 10%, #64748b 40%, #475569 70%, #374151 100%) !important;
+  border: 1px solid #475569 !important;
   border-radius: 12px !important;
-  box-shadow: 0 4px 16px rgba(71, 85, 105, 0.2) !important;
+  box-shadow: 0 4px 16px rgba(51, 65, 85, 0.3) !important;
   transition: all 0.3s ease !important;
 }
 
 .dashboard-card-usage:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 8px 32px rgba(71, 85, 105, 0.25), 0 0 20px rgba(148, 163, 184, 0.3) !important;
-  border-color: rgba(148, 163, 184, 0.6) !important;
+  box-shadow: 0 8px 32px rgba(30, 41, 59, 0.35), 0 0 20px rgba(30, 41, 59, 0.4) !important;
+  border-color: #1e293b !important;
 }
 
 .dashboard-card-enabled {
-  background: linear-gradient(135deg, #64748b 0%, #475569 50%, #374151 100%) !important;
-  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+  background: linear-gradient(135deg, #94a3b8 10%, #64748b 40%, #475569 70%, #374151 100%) !important;
+  border: 1px solid #475569 !important;
   border-radius: 12px !important;
-  box-shadow: 0 4px 16px rgba(71, 85, 105, 0.2) !important;
+  box-shadow: 0 4px 16px rgba(51, 65, 85, 0.3) !important;
   transition: all 0.3s ease !important;
 }
 
 .dashboard-card-enabled:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 8px 32px rgba(71, 85, 105, 0.25), 0 0 20px rgba(148, 163, 184, 0.3) !important;
-  border-color: rgba(148, 163, 184, 0.6) !important;
+  box-shadow: 0 8px 32px rgba(30, 41, 59, 0.35), 0 0 20px rgba(30, 41, 59, 0.4) !important;
+  border-color: #1e293b !important;
 }
 
 /* 卡片整体内容样式优化 */

@@ -93,64 +93,77 @@ const DashboardPage = () => {
         </Typography.Title>
       </div>
       <Spin spinning={loading} tip="Loading dashboard data...">
-        <Row gutter={[16, 16]}>
-          <Col xs={24} sm={12} md={6}>
-            <Link to="/prompts">
-              <Card className="dashboard-card-prompts" hoverable>
-                <Statistic 
-                  title="提示词总数" 
-                  value={totalPrompts} 
-                  loading={loading} 
-                  prefix={<FileTextOutlined style={techIconStyle} />}
+        <div className="navigable-section" style={{ padding: '20px', backgroundColor: 'rgba(243, 244, 246, 0.5)', borderRadius: '8px', marginBottom: '32px' }}>
+          <Typography.Title level={3} style={{ marginBottom: '20px', color: '#1f2937', fontWeight: '600', fontSize: '20px' }}>
+            快捷导航
+          </Typography.Title>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={8}>
+              <Link to="/prompts">
+                <Card className="dashboard-card-prompts" hoverable>
+                  <Statistic
+                    title="提示词总数"
+                    value={totalPrompts}
+                    loading={loading}
+                    prefix={<FileTextOutlined style={techIconStyle} />}
+                  />
+                </Card>
+              </Link>
+            </Col>
+            <Col xs={24} sm={12} md={8}>
+              <Link to="/tags">
+                <Card className="dashboard-card-tags" hoverable>
+                  <Statistic
+                    title="标签总数"
+                    value={totalTags}
+                    loading={loading}
+                    prefix={<TagsOutlined style={techIconStyle} />}
+                  />
+                </Card>
+              </Link>
+            </Col>
+            <Col xs={24} sm={12} md={8}>
+              <Link to="/users">
+                <Card className="dashboard-card-users" hoverable>
+                  <Statistic
+                    title="用户总数"
+                    value={totalUsers}
+                    loading={loading}
+                    prefix={<UserOutlined style={techIconStyle} />}
+                  />
+                </Card>
+              </Link>
+            </Col>
+          </Row>
+        </div>
+
+        <div className="data-section" style={{ padding: '20px', backgroundColor: 'rgba(236, 253, 245, 0.5)', borderRadius: '8px' }}>
+          <Typography.Title level={3} style={{ marginBottom: '20px', color: '#1f2937', fontWeight: '600', fontSize: '20px' }}>
+            数据统计
+          </Typography.Title>
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={8}>
+              <Card className="dashboard-card-usage">
+                <Statistic
+                  title="总使用次数"
+                  value={totalUsage}
+                  loading={loading}
+                  prefix={<RiseOutlined style={techIconStyle} />}
                 />
               </Card>
-            </Link>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Link to="/tags">
-              <Card className="dashboard-card-tags" hoverable>
-                <Statistic 
-                  title="标签总数" 
-                  value={totalTags} 
-                  loading={loading} 
-                  prefix={<TagsOutlined style={techIconStyle} />}
+            </Col>
+            <Col xs={24} sm={12} md={8}>
+              <Card className="dashboard-card-enabled">
+                <Statistic
+                  title={`当前启用 (${enabledPercentage}%)`}
+                  value={currentlyEnabled}
+                  loading={loading}
+                  prefix={<CheckCircleOutlined style={techIconStyle} />}
                 />
               </Card>
-            </Link>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Link to="/users">
-              <Card className="dashboard-card-users" hoverable>
-                <Statistic 
-                  title="用户总数" 
-                  value={totalUsers} 
-                  loading={loading} 
-                  prefix={<UserOutlined style={techIconStyle} />}
-                />
-              </Card>
-            </Link>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card className="dashboard-card-usage" hoverable>
-              <Statistic 
-                title="总使用次数" 
-                value={totalUsage} 
-                loading={loading} 
-                prefix={<RiseOutlined style={techIconStyle} />}
-              />
-            </Card>
-          </Col>
-          <Col xs={24} sm={12} md={6}>
-            <Card className="dashboard-card-enabled" hoverable>
-              <Statistic 
-                title={`当前启用 (${enabledPercentage}%)`} 
-                value={currentlyEnabled} 
-                loading={loading} 
-                prefix={<CheckCircleOutlined style={techIconStyle} />}
-              />
-            </Card>
-          </Col>
-        </Row>
+            </Col>
+          </Row>
+        </div>
       </Spin>
     </div>
   );
