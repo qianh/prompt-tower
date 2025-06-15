@@ -1,16 +1,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Input, Button, Form, message, Typography, Spin, Card, Row, Col, Popconfirm } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { Input, Button, message, Typography, Spin, Card, Row, Col, Popconfirm } from 'antd';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 // import { FileTextOutlined } from '@ant-design/icons';
 import { tagAPI, promptAPI } from '../services/api'; // Added promptAPI
 
 const { Title, Paragraph } = Typography;
 
 const TagManagementPage = () => {
-  const [form] = Form.useForm();
   const [tags, setTags] = useState([]); // Stores unique tag names as strings
   const [loading, setLoading] = useState(true);
   const [addLoading, setAddLoading] = useState(false);
+  const [isAddingTag, setIsAddingTag] = useState(false);
+  const [inlineNewTagName, setInlineNewTagName] = useState('');
 
   const fetchGlobalTags = useCallback(async () => {
     setLoading(true);
@@ -20,7 +21,19 @@ const TagManagementPage = () => {
         promptAPI.list() // Assuming this returns List of prompt objects, each having a 'tags' array
       ]);
 
-      const processedTags = (Array.isArray(globalTagsList) ? globalTagsList : []).map(tagName => {
+      console.log('[TagDebug] Raw globalTagsList from API:', globalTagsList);
+      console.log('[TagDebug] Is globalTagsList an array?', Array.isArray(globalTagsList));
+      console.log('[TagDebug] Raw allPrompts from API:', allPrompts);
+      console.log('[TagDebug] Is allPrompts an array?', Array.isArray(allPrompts));
+
+      const listToProcess = Array.isArray(globalTagsList) ? globalTagsList : [];
+      console.log('[TagDebug] listToProcess for tags (should be an array):', listToProcess);
+      
+      if (!Array.isArray(listToProcess)) {
+        console.error('[TagDebug] CRITICAL: listToProcess is NOT an array before .map()!', listToProcess);
+      }
+
+      const processedTags = listToProcess.map(tagName => {
         let count = 0;
         if (Array.isArray(allPrompts)) {
           allPrompts.forEach(prompt => {
@@ -65,7 +78,6 @@ const TagManagementPage = () => {
     try {
       await tagAPI.create({ name: trimmedTagName });
       message.success(`Tag "${trimmedTagName}" added successfully to the global list.`);
-      form.resetFields();
       await fetchGlobalTags(); // Refresh the list from the backend
     } catch (error) {
       console.error('Failed to add tag:', error);
@@ -91,37 +103,37 @@ const TagManagementPage = () => {
     }
   };
 
+
+  const handleInlineTagSubmit = async () => {
+    const tagName = inlineNewTagName.trim();
+    if (!tagName) {
+      message.error('Tag name cannot be empty');
+      setIsAddingTag(false); // Still hide input on empty submit attempt via Enter
+      setInlineNewTagName('');
+      return;
+    }
+    await handleAddTag({ tagName }); // handleAddTag already sets loading and calls fetchGlobalTags
+    setIsAddingTag(false);
+    setInlineNewTagName('');
+  };
+
+  const handleInlineTagBlurOrCancel = () => {
+    // On blur, simply hide the input and clear its value
+    // If the user wants to submit, they should press Enter
+    setIsAddingTag(false);
+    setInlineNewTagName('');
+  };
+
   return (
     <div style={{ maxWidth: '1200px', margin: 'auto', padding: '20px' }}>
-      <Title level={2}>Tag Management</Title>
-      
-      <Form
-        form={form}
-        layout="inline"
-        onFinish={handleAddTag}
-        style={{ marginBottom: '20px' }}
-      >
-        <Form.Item
-          name="tagName"
-          rules={[{ required: true, message: 'Please input the tag name!' }]}
-          style={{ flexGrow: 1 }}
-        >
-          <Input placeholder="Enter new global tag name" />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" loading={addLoading}>
-            Add Tag
-          </Button>
-        </Form.Item>
-      </Form>
+      <Title level={2} style={{ marginBottom: '30px' }}>Tag Management</Title>
 
-      <Title level={4} style={{ marginTop: '30px' }}>Global Tags</Title>
       <Spin spinning={loading} tip="Loading tags...">
         {tags.length > 0 ? (
           <Row gutter={[16, 16]}>
             {tags.map(tag => (
               <Col key={tag.name} xs={24} sm={12} md={8} lg={8} xl={8}>
-                <Card size="small" style={{ position: 'relative' }}>
+                <Card size="small" style={{ position: 'relative', height: '110px', display: 'flex', flexDirection: 'column' }} bodyStyle={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '12px' }}>
                   <div style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 1 }}>
                     <Popconfirm
                       title="Are you sure you want to delete this tag?"
@@ -139,6 +151,52 @@ const TagManagementPage = () => {
                 </Card>
               </Col>
             ))}
+            {/* Add Tag Card */}
+            <Col xs={24} sm={12} md={8} lg={8} xl={8}>
+              <Card
+                size="small"
+                hoverable
+                style={{
+                  width: '100%',
+                  height: '110px', // Added
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderStyle: 'dashed',
+                  borderWidth: '2px', // Added
+                  borderColor: '#1890ff', // Added
+                  cursor: 'pointer',
+                }}
+                bodyStyle={{ 
+                  flexGrow: 1, 
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  width: '100%',
+                  padding: '12px'
+                }}
+                onClick={() => setIsAddingTag(true)}
+              >
+                {isAddingTag ? (
+                  <Input
+                    placeholder="New tag name"
+                    value={inlineNewTagName}
+                    onChange={(e) => setInlineNewTagName(e.target.value)}
+                    onPressEnter={handleInlineTagSubmit}
+                    onBlur={handleInlineTagBlurOrCancel}
+                    autoFocus
+                    style={{ margin: 'auto 0' }} // To help with centering
+                  />
+                ) : (
+                  <>
+                    <PlusOutlined style={{ fontSize: '24px', color: '#1890ff' }} />
+                    <div style={{ marginTop: 8 }}>Add Tag</div>
+                  </>
+                )}
+              </Card>
+            </Col>
           </Row>
         ) : (
           !loading && <Typography.Text>No global tags defined yet.</Typography.Text>
