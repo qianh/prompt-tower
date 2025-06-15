@@ -1,0 +1,96 @@
+/* TagManagementPage specific styles */
+.tag-management-page {
+  padding: 20px;
+  background-color: transparent; /* Match dashboard page background if it's not white */
+  min-height: 100vh;
+}
+
+.tag-management-page .ant-typography-title {
+  color: #1f2937; 
+  font-weight: 700;
+}
+
+/* Base style for all tag cards to share common properties like height, radius, shadow, transition */
+.tag-card-base {
+  height: 120px !important; 
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(71, 85, 105, 0.2) !important;
+  transition: all 0.3s ease !important;
+  display: flex !important; 
+  flex-direction: column !important; 
+}
+
+.tag-card-base:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 32px rgba(71, 85, 105, 0.25), 0 0 20px rgba(148, 163, 184, 0.3) !important;
+}
+
+.tag-card-base .ant-card-body {
+  flex-grow: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  padding: 16px !important; 
+  text-align: left;
+}
+
+/* Style for existing tag cards */
+.tag-card {
+  background: linear-gradient(135deg, #64748b 0%, #475569 50%, #374151 100%) !important;
+  border: 1px solid rgba(148, 163, 184, 0.4) !important;
+}
+
+.tag-card:hover {
+ /* Inherits base hover transform, specific border for dark cards */
+  border-color: rgba(148, 163, 184, 0.6) !important;
+}
+
+.tag-card .ant-card-meta-title {
+  color: #ffffff !important; 
+  font-weight: 600 !important;
+  font-size: 20px !important; /* Increased from 18px */
+  margin-bottom: 8px !important;
+}
+
+.tag-card .ant-typography { /* For "关联提示词: X个" */
+  color: rgba(203, 213, 225, 0.85) !important; 
+  font-size: 16px !important; /* Increased from 14px */
+}
+
+.tag-card .ant-btn-text[danger] .anticon { /* Delete button icon */
+    color: #cbd5e1 !important; /* Lighter color for visibility on dark background */
+}
+.tag-card .ant-btn-text[danger]:hover .anticon {
+    color: #ff7875 !important; /* Ant Design danger hover color */
+}
+
+/* Style for the "Add Tag" card */
+.add-tag-card {
+  background: #f0f2f5 !important; /* Light silver background */
+  border: 1px solid #cbd5e1 !important; /* Softer border */
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+}
+
+.add-tag-card:hover {
+  border-color: #94a3b8 !important; /* Darker border on hover for light card */
+  box-shadow: 0 8px 32px rgba(100, 116, 139, 0.20), 0 0 15px rgba(148, 163, 184, 0.15) !important;
+}
+
+.add-tag-card .anticon-plus {
+  font-size: 28px !important;
+  color: #374151 !important; 
+}
+
+.add-tag-card div[style*="marginTop: 8"] { /* Target "Add Tag" text */
+  color: #374151 !important; 
+  font-weight: 500;
+  font-size: 16px; /* Increased font size */
+}
+
+.add-tag-card .ant-input { /* Style for the input field when it appears */
+  border-color: #94a3b8;
+  background-color: #ffffff;
+  color: #374151;
+}

@@ -1,0 +1,75 @@
+/* PromptListPage specific styles */
+.prompt-list-page {
+  /* Inherits background from AuthenticatedLayout, similar to DashboardPage */
+  padding: 0 !important; /* Override AntD default if any */
+  min-height: 100vh;
+}
+
+.prompt-list-page .ant-layout-content {
+  /* Instead of plain white, use a subtle background from the dashboard palette */
+  background: #f8fafc; /* Light slate color */
+  padding: 24px !important;
+  margin: 0 !important;
+  min-height: 280px;
+  border-radius: 8px; /* Consistent with dashboard sections */
+}
+
+.prompt-list-header {
+  background: linear-gradient(135deg, #64748b 0%, #475569 50%, #374151 10%);
+  padding: 16px 24px !important;
+  margin-bottom: 16px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+}
+
+.prompt-list-header .ant-typography {
+  color: #ffffff !important; /* White text on dark gradient */
+  font-weight: 600 !important;
+}
+
+.prompt-list-page .ant-table-wrapper {
+  background-color: transparent;
+}
+
+/* Styling for the Ant Design Table in PromptList */
+.prompt-list-page .ant-table {
+  background: transparent !important;
+}
+
+.prompt-list-page .ant-table-thead > tr > th {
+  background: #e2e8f0 !important; /* Light slate header for table */
+  color: #374151 !important; /* Darker text for header */
+  font-weight: 600 !important;
+}
+
+.prompt-list-page .ant-table-tbody > tr > td {
+  background: transparent !important;
+  color: #374151 !important; /* Standard text color */
+  border-bottom: 1px solid #e5e7eb !important; /* Subtle row separator */
+}
+
+.prompt-list-page .ant-table-tbody > tr.ant-table-row:hover > td {
+  background: #f1f5f9 !important; /* Lighter slate for hover */
+}
+
+/* Tag styling adjustments */
+.prompt-list-page .ant-tag {
+  border-radius: 4px;
+}
+
+.prompt-list-page .ant-tag-blue { /* For 'tags' column */
+  background-color: #475569; /* Mid-tone slate from dashboard gradient */
+  color: #ffffff;
+  border-color: #374151;
+}
+
+.prompt-list-page .ant-tag-green { /* For 'status' column - enabled */
+  background-color: #10b981; /* Keep a clear green for enabled */
+  color: #ffffff;
+  border-color: #059669;
+}
+
+.prompt-list-page .ant-tag-default { /* For 'status' column - disabled */
+  background-color: #9ca3af; /* Gray for disabled */
+  color: #ffffff;
+  border-color: #6b7280;
+}

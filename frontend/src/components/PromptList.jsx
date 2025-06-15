@@ -118,6 +118,7 @@ const PromptList = ({ onEdit }) => {
       title: '标签',
       dataIndex: 'tags',
       key: 'tags',
+      width: 150,
       render: (tagsArray) => (
         <>
           {tagsArray && tagsArray.map(tag => (
@@ -147,7 +148,7 @@ const PromptList = ({ onEdit }) => {
       title: '更新时间',
       dataIndex: 'updated_at',
       key: 'updated_at',
-      width: 180,
+      width: 250,
       render: (time) => time ? new Date(time).toLocaleString() : '-',
     },
     {

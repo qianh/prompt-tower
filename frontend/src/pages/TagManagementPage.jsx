@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import './TagManagementPage.css';
 import { Input, Button, message, Typography, Spin, Card, Row, Col, Popconfirm } from 'antd';
 import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 // import { FileTextOutlined } from '@ant-design/icons';
@@ -125,7 +126,7 @@ const TagManagementPage = () => {
   };
 
   return (
-    <div style={{ maxWidth: '1200px', margin: 'auto', padding: '20px' }}>
+    <div className="tag-management-page">
       <Title level={2} style={{ marginBottom: '30px' }}>Tag Management</Title>
 
       <Spin spinning={loading} tip="Loading tags...">
@@ -133,7 +134,7 @@ const TagManagementPage = () => {
           <Row gutter={[16, 16]}>
             {tags.map(tag => (
               <Col key={tag.name} xs={24} sm={12} md={8} lg={8} xl={8}>
-                <Card size="small" style={{ position: 'relative', height: '110px', display: 'flex', flexDirection: 'column' }} bodyStyle={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '12px' }}>
+                <Card className="tag-card-base tag-card">
                   <div style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 1 }}>
                     <Popconfirm
                       title="Are you sure you want to delete this tag?"
@@ -156,26 +157,14 @@ const TagManagementPage = () => {
               <Card
                 size="small"
                 hoverable
-                style={{
-                  width: '100%',
-                  height: '110px', // Added
+                className="tag-card-base add-tag-card"
+                bodyStyle={{
+                  /* Adjusted to ensure content within add-tag-card also centers if not handled by class */
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  borderStyle: 'dashed',
-                  borderWidth: '2px', // Added
-                  borderColor: '#1890ff', // Added
-                  cursor: 'pointer',
-                }}
-                bodyStyle={{ 
-                  flexGrow: 1, 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  alignItems: 'center', 
-                  justifyContent: 'center', 
-                  width: '100%',
-                  padding: '12px'
+                  width: '100%'
                 }}
                 onClick={() => setIsAddingTag(true)}
               >

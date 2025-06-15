@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './PromptListPage.css';
 import { Layout, Button, Modal, Typography, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import PromptList from '../components/PromptList';
@@ -33,11 +34,11 @@ const PromptListPage = () => {
   };
 
   return (
-    <Layout style={{ padding: '0 24px 24px' }}>
+    <Layout className="prompt-list-page">
       <Row
         justify="space-between"
         align="middle"
-        style={{ backgroundColor: '#fff', marginBottom: '16px', padding: '16px' }}
+        className="prompt-list-header"
       >
         <Col>
           <Typography.Title level={4} style={{ margin: 0 }}>
@@ -56,10 +57,11 @@ const PromptListPage = () => {
       </Row>
       <Content
         style={{
-          background: '#fff',
-          padding: 24,
-          margin: 0,
-          minHeight: 280,
+          // Styles are now in PromptListPage.css
+          // background: '#fff', // Removed
+          // padding: 24, // Handled by .prompt-list-page .ant-layout-content
+          // margin: 0, // Handled by .prompt-list-page .ant-layout-content
+          minHeight: 280, // Retain minHeight or adjust in CSS if needed
         }}
       >
         <PromptList onEdit={handleEdit} key={refreshList} />
