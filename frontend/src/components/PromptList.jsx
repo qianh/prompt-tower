@@ -77,10 +77,8 @@ const PromptList = ({ onEdit }) => {
     message.success('已复制到剪贴板');
     try {
       await promptAPI.incrementUsageCount(record.title);
-      // Optionally, you could show another success message or update UI if needed
-      console.log(`Usage count for '${record.title}' incremented.`);
-      // No need to reload prompts here as usage_count is not directly visible in the list by default.
-      // If it were, you might call loadPrompts(selectedTag) or update the specific prompt in the state.
+      message.success('使用次数已增加');
+      loadPrompts(selectedTag); // Reload prompts to show updated usage count
     } catch (error) {
       message.error('更新使用次数失败: ' + error.message);
       console.error('Failed to increment usage count:', error);
@@ -143,6 +141,12 @@ const PromptList = ({ onEdit }) => {
           {status === 'enabled' ? '启用' : '禁用'}
         </Tag>
       ),
+    },
+    {
+      title: '使用次数',
+      dataIndex: 'usage_count',
+      key: 'usage_count',
+      width: 150,
     },
     {
       title: '更新时间',
