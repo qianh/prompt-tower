@@ -56,8 +56,8 @@ The system is composed of three main parts:
         ```
     *   Install dependencies:
         ```bash
-        uv pip install -e . 
-        # or: uv pip install fastapi uvicorn pydantic pyyaml httpx google-generativeai openai aiofiles python-multipart python-dotenv sse-starlette pydantic-settings passlib[bcrypt] python-jose[cryptography]
+        uv pip install -e . # Preferred method for development
+        # or directly: uv pip install fastapi uvicorn pydantic pyyaml httpx google-generativeai openai aiofiles python-multipart python-dotenv sse-starlette pydantic-settings passlib[bcrypt] python-jose[cryptography]
         ```
     *   Copy `.env.example` to `.env` and configure variables, especially `SECRET_KEY` for JWTs and any LLM API keys.
         ```bash
@@ -111,7 +111,7 @@ The system is composed of three main parts:
     *   To lint:
         ```bash
         cd frontend
-        npm run lint 
+        npm run lint
         # (If not explicitly defined, ESLint might run as part of 'npm test' or via IDE integrations)
         # Verify if 'npm run lint' needs to be added to package.json scripts if not present
         ```
@@ -123,7 +123,7 @@ The system is composed of three main parts:
     *   Run tests:
         ```bash
         pytest
-        # or specific file: pytest tests/test_backend.py
+        # or specific file, e.g.: pytest tests/test_backend.py
         ```
 *   **Frontend (from `frontend/` directory):**
     *   Uses `react-scripts test`.
