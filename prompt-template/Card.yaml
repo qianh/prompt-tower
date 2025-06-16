@@ -1,3 +1,4 @@
+title: Card
 content: '初始化：
 
   根据用户输入的话题，先把话题翻译成英文，然后用100字以内的精炼语言拆解其中的深层含义。然后用HTML创建一个优雅的文字卡片表现这个话题。
@@ -30,11 +31,11 @@ content: '初始化：
 
 
   初始化完成后，请用户输入话题。'
+tags:
+- 网页
 remark: '用HTML创建一个优雅的文字卡片表现话题。
 
   '
 status: enabled
-tags:
-- 网页
-title: Card
-creator_username: "john"
+creator_username: john
+usage_count: 2

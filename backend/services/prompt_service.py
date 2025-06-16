@@ -159,8 +159,7 @@ class PromptService:
         # We need to ensure that update_prompt can handle just updating usage_count
         # and that it correctly identifies the prompt by its title (which is the identifier here)
         updated_prompt = await self.storage_service.update_prompt(
-            original_title_identifier=title, 
-            update_data={"usage_count": new_usage_count}
+            title, {"usage_count": new_usage_count}
         )
         return updated_prompt
 

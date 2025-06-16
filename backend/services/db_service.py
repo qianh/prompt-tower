@@ -1,7 +1,7 @@
 """
 数据库服务层 - 替代文件服务
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from sqlalchemy import and_, or_, select, func, delete
@@ -223,6 +223,8 @@ class DatabaseService:
                     raise ValueError(f"标题 '{new_title}' 已存在")
 
             # 更新字段
+            db_prompt.updated_at = datetime.now(timezone.utc)
+
             if "title" in update_data:
                 db_prompt.title = update_data["title"]
             if "content" in update_data:
