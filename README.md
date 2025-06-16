@@ -11,11 +11,18 @@
 - ✅ **LLM优化**：集成Gemini、Qwen、DeepSeek等LLM，自动优化prompt
 - ✅ **实时同步**：所有生效的prompt自动同步到MCP Server
 
+### 数据存储
+
+- ✅ **双模式支持**：支持文件存储和PostgreSQL数据库存储
+- ✅ **无缝迁移**：提供完整的数据迁移工具和指南
+- ✅ **高性能查询**：数据库模式支持复杂查询和索引优化
+- ✅ **数据一致性**：关系型数据库确保数据完整性
+
 ### 用户认证
 - ✅ **用户注册与登录**: 支持用户通过用户名和密码注册及登录。
 - ✅ **JWT安全认证**: 后端API使用JSON Web Tokens (JWT)进行安全认证。
 - ✅ **受保护的路由**: 前后端均实现路由保护，确保敏感操作和数据仅对已认证用户开放。
-- ✅ **用户数据存储**: 用户信息当前通过后端文件系统存储 (位于 `backend/data/users.json`)。
+- ✅ **用户数据存储**: 支持文件系统存储 (`backend/data/users.json`) 和PostgreSQL数据库存储。
 
 ### MCP Server
 
@@ -26,8 +33,9 @@
 
 ## 技术栈
 
-- **后端**：Python 3.11+, FastAPI, uv, passlib[bcrypt], python-jose[cryptography]
+- **后端**：Python 3.11+, FastAPI, SQLAlchemy, PostgreSQL, uv, passlib[bcrypt], python-jose[cryptography]
 - **前端**：React 18, Ant Design 5, React Router DOM
+- **数据库**：PostgreSQL (可选), 文件存储 (默认)
 - **LLM支持**：Gemini, Qwen, DeepSeek
 - **协议**：MCP (Model Context Protocol)
 
@@ -46,10 +54,11 @@ cd prompt-management-system
 - 确保已安装 Python 3.11+ 和 uv。
 - 在项目根目录，安装后端依赖:
   ```bash
-  # 建议使用 editable install (如果项目结构支持)
-  # uv pip install -e .
-  # 或直接安装列出的依赖
-  uv pip install fastapi uvicorn pydantic pyyaml httpx google-generativeai openai aiofiles python-multipart python-dotenv sse-starlette pydantic-settings passlib[bcrypt] python-jose[cryptography]
+  # 安装项目依赖（包括数据库支持）
+  uv pip install -e .
+  
+  # 或者安装开发依赖
+  uv pip install -e ".[dev]"
   ```
 - (可选但推荐) 创建并激活虚拟环境:
   ```bash
@@ -74,7 +83,7 @@ cd prompt-management-system
 **启动后端服务:**
 ```bash
 # 从项目根目录
-uvicorn backend.main:app --host 0.0.0.0 --port 8010 --reload
+uv run uvicorn backend.main:app --host 0.0.0.0 --port 8010 --reload
 ```
 
 **启动前端开发服务:**
@@ -90,6 +99,44 @@ npm start
 python mcp_server/server.py
 ```
 
+### 4. 数据库配置 (可选)
+
+系统默认使用文件存储，如需使用PostgreSQL数据库：
+
+**安装PostgreSQL并创建数据库:**
+```bash
+# Ubuntu/Debian
+sudo apt install postgresql postgresql-contrib
+
+# 创建数据库
+sudo -u postgres createuser --interactive prompt_user
+sudo -u postgres createdb prompt_management -O prompt_user
+```
+
+**配置数据库连接** (在 `.env` 文件中):
+```env
+USE_DATABASE=True
+DATABASE_URL=postgresql://prompt_user:password@localhost/prompt_management
+ASYNC_DATABASE_URL=postgresql+asyncpg://prompt_user:password@localhost/prompt_management
+```
+
+**初始化数据库表:**
+```bash
+uv run python scripts/init_database.py
+```
+
+**迁移现有数据** (如果有文件数据):
+```bash
+uv run python scripts/migrate_to_database.py
+```
+
+**测试迁移结果:**
+```bash
+uv run python scripts/test_migration.py
+```
+
+详细迁移指南请参考 [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md)
+
 ## 整体架构图
 
 ```txt
@@ -104,13 +151,15 @@ python mcp_server/server.py
 ┌─────────────────────┴───────────────────────────────────────┐
 │                  Python Backend (FastAPI)                    │
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │  Auth API | Prompt管理API | LLM集成 | 文件存储管理   │   │
+│  │  Auth API | Prompt管理API | LLM集成 | 存储管理        │   │
 │  └─────────────────────────────────────────────────────┘   │
 │                          │                 │                 │
 │  ┌───────────────────────┴─┐  ┌────────────┴───────────┐   │
-│  │  prompt-template/目录   │  │  backend/data/users.json │   │
-│  │ (YAML prompts)          │  │  (JSON 用户数据)         │   │
-│  └─────────────────────────┘  └──────────────���───────────┘   │
+│  │  文件存储 (默认)        │  │  PostgreSQL数据库 (可选) │   │
+│  │  - prompt-template/     │  │  - users表              │   │
+│  │  - backend/data/        │  │  - prompts表            │   │
+│  │                         │  │  - tags表               │   │
+│  └─────────────────────────┘  └────────────────────────┘   │
 └─────────────────────────────────────────────────────────────┘
                               │
                               │ 共享数据 (Prompts)

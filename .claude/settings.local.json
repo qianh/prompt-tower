@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /Users/john/private/ai/prompt-management-system/frontend/src/pages)",
+      "Bash(sh /Users/john/private/ai/prompt-management-system/scripts/start.sh)",
+      "Bash(sh scripts/start.sh)",
+      "Bash(git add backend/api/prompts.py backend/models.py backend/services/file_service.py backend/services/prompt_service.py frontend/src/components/PromptList.jsx prompt-template/Card.yaml uv.lock prompt-template/Bento\\ Grid.yaml)",
+      "Bash(git add backend/api/prompts.py backend/models.py backend/services/file_service.py backend/services/prompt_service.py frontend/src/components/PromptList.jsx prompt-template/Card.yaml uv.lock \"prompt-template/Bento Grid.yaml\")",
+      "Bash(git commit -m \"$(cat <<'EOF'\nfeat: Implement prompt ownership and permissions\n\n- Add creator_username to prompt model and storage\n- Restrict prompt edit, delete, and status toggle to the creator\n- Update backend API and services to enforce ownership\n- Update frontend to disable actions for non-owners\n- Add new 'Bento Grid.yaml' prompt template\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git add .gitignore)",
+      "Bash(git commit -m \"$(cat <<'EOF'\nchore: Ignore backend utils pycache\n\nAdd `backend/utils/__pycache__/` to .gitignore to prevent caching artifacts from being tracked.\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(./scripts/start.sh)",
+      "Bash(npm run lint)",
+      "Bash(black backend/)",
+      "Bash(isort backend/)",
+      "Bash(flake8 backend/)",
+      "Bash(flake8 ../backend/)",
+      "Bash(uv venv)",
+      "Bash(source .venv/bin/activate)",
+      "Bash(uv pip install -e .)",
+      "Bash(rg -n --no-heading \"const processedTags = \\(Array.isArray\\(globalTagsList\\)\" /Users/john/private/ai/prompt-management-system/frontend/src/pages/TagManagementPage.jsx)",
+      "Bash(rg -n --no-heading -F 'message.warning(' /Users/john/private/ai/prompt-management-system/frontend/src/pages/TagManagementPage.jsx)"
+    ],
+    "deny": []
+  }
+}

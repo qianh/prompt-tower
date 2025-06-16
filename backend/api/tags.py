@@ -2,7 +2,8 @@ from typing import List
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from backend import models, services
+from backend import models
+from backend.services.unified_tag_service import tag_service
 from backend.api.auth import get_current_user
 
 router = APIRouter()
@@ -17,7 +18,7 @@ async def read_tags(
     Returns a direct list of tag name strings.
     """
     try:
-        tags_list = await services.tag_service.get_all_tags()
+        tags_list = await tag_service.get_all_tags()
         return tags_list # Directly return List[str]
     except Exception as e:
         # Log error if logger is available
@@ -47,9 +48,9 @@ async def create_tag(
     Returns the complete updated list of global tags.
     """
     try:
-        await services.tag_service.add_tag(tag_create.name)
+        await tag_service.add_tag(tag_create.name)
         # After adding, fetch and return the complete list of tags
-        updated_tags_list = await services.tag_service.get_all_tags()
+        updated_tags_list = await tag_service.get_all_tags()
         return updated_tags_list
     except ValueError as e:
         raise HTTPException(

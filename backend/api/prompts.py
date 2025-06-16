@@ -6,14 +6,9 @@ from backend.api.auth import get_current_user  # Import the dependency
 from backend.models import User  # Added for type hinting current_user
 from backend.models import (Prompt, PromptCreate, PromptUpdate, SearchRequest,
                             SearchResponse)
-from backend.services.file_service import FileService
-from backend.services.prompt_service import \
-    PromptService  # Import PromptService
+from backend.services.prompt_service import PromptService
 
 router = APIRouter(prefix="/prompts", tags=["prompts"])
-file_service = (
-    FileService()
-)  # Keep for read-only operations like list and get_prompt if not moved to service
 prompt_service = PromptService()  # Instantiate PromptService
 
 
@@ -23,7 +18,7 @@ async def list_prompts(
     tag: Optional[str] = Query(None, description="过滤标签"),
 ):
     """获取所有prompts"""
-    prompts = await file_service.list_prompts()
+    prompts = await prompt_service.storage_service.list_prompts()
 
     # 应用过滤
     if status:
@@ -48,7 +43,7 @@ async def get_all_tags():
 @router.get("/{title}", response_model=Prompt)
 async def get_prompt(title: str):
     """获取单个prompt"""
-    prompt = await file_service.read_prompt(title)
+    prompt = await prompt_service.storage_service.read_prompt(title)
     if not prompt:
         raise HTTPException(status_code=404, detail="Prompt不存在")
     return prompt
@@ -104,7 +99,7 @@ async def delete_prompt(title: str, current_user: User = Depends(get_current_use
 @router.post("/search", response_model=SearchResponse)
 async def search_prompts(request: SearchRequest):
     """搜索prompts"""
-    results = await file_service.search_prompts(request.query, request.search_in)
+    results = await prompt_service.storage_service.search_prompts(request.query, request.search_in)
     return SearchResponse(
         results=results[: request.limit], total=len(results), query=request.query
     )

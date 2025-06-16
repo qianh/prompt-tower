@@ -1,5 +1,5 @@
 from typing import List, Dict, Any, Optional
-from backend.services.file_service import FileService
+from backend.config import settings
 import logging
 import httpx
 
@@ -8,7 +8,12 @@ logger = logging.getLogger(__name__)
 
 class SearchService:
     def __init__(self):
-        self.file_service = FileService()
+        if settings.USE_DATABASE:
+            from backend.services.db_service import DatabaseService
+            self.storage_service = DatabaseService()
+        else:
+            from backend.services.file_service import FileService
+            self.storage_service = FileService()
 
     async def search_prompts(self, params: Dict[str, Any]) -> List[Dict[str, Any]]:
         """MCP搜索接口"""
@@ -21,7 +26,7 @@ class SearchService:
         )
 
         # 只搜索启用的prompts
-        all_prompts = await self.file_service.search_prompts(query, search_in)
+        all_prompts = await self.storage_service.search_prompts(query, search_in)
         enabled_prompts = [p for p in all_prompts if p.status == "enabled"]
 
         # 转换为MCP格式
@@ -58,7 +63,7 @@ class SearchService:
 
     async def get_prompt_names(self, params: Dict[str, Any]) -> List[str]:
         """获取所有可用的prompt名称"""
-        all_prompts = await self.file_service.list_prompts()
+        all_prompts = await self.storage_service.list_prompts()
         enabled_prompts = [p for p in all_prompts if p.status == "enabled"]
         names = [p.title for p in enabled_prompts]
         logger.info(f"Returning {len(names)} prompt names")
@@ -70,7 +75,7 @@ class SearchService:
         if not title:
             raise ValueError("Title is required")
 
-        prompt = await self.file_service.read_prompt(title)
+        prompt = await self.storage_service.read_prompt(title)
         if not prompt or prompt.status != "enabled":
             return None
 
@@ -101,7 +106,7 @@ class SearchService:
         """列出所有prompts"""
         tags_filter = params.get("tags", [])
 
-        all_prompts = await self.file_service.list_prompts()
+        all_prompts = await self.storage_service.list_prompts()
         enabled_prompts = [p for p in all_prompts if p.status == "enabled"]
 
         # 按标签过滤

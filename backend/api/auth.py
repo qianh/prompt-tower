@@ -6,8 +6,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from backend.config import settings  # Moved to config.py
 from backend.models import TokenData  # , UserInDB (already imported)
 from backend.models import Token, User, UserCreate, UserInDB
-from backend.services.user_service import (create_user_in_db,
-                                           get_user_by_username)
+from backend.services.unified_user_service import user_service
 from backend.utils.jwt_helpers import create_access_token, decode_access_token
 from backend.utils.security import get_password_hash, verify_password
 
@@ -21,13 +20,13 @@ router = APIRouter(
 
 @router.post("/signup", response_model=User)
 async def signup(user_data: UserCreate):
-    db_user = await get_user_by_username(user_data.username)
+    db_user = await user_service.user_service.get_user_by_username(user_data.username)
     if db_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Username already registered",
         )
-    new_user = await create_user_in_db(user_data)
+    new_user = await user_service.create_user(user_data)
     if not new_user:
         # This case should ideally not happen if username check is done first,
         # but as a safeguard / if create_user_in_db has other failure modes.
@@ -40,7 +39,7 @@ async def signup(user_data: UserCreate):
 
 @router.post("/login", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = await get_user_by_username(form_data.username)
+    user = await user_service.get_user_by_username(form_data.username)
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -66,7 +65,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     token_data = decode_access_token(token)
     if token_data is None or token_data.username is None:
         raise credentials_exception
-    user = await get_user_by_username(token_data.username)
+    user = await user_service.get_user_by_username(token_data.username)
     if user is None:
         raise credentials_exception
     return User(id=user.id, username=user.username)  # Return Pydantic User model

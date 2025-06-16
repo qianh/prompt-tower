@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, HTTPException, status
-from backend.services.user_service import get_all_users
+from backend.services.unified_user_service import user_service
 from backend.services.prompt_service import get_prompt_by_username_count
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -11,7 +11,7 @@ router = APIRouter(prefix="/users", tags=["users"])
 async def list_users():
     """获取所有用户列表及其提示词数量"""
     try:
-        users_data = await get_all_users()
+        users_data = await user_service.get_all_users()
         users_list = []
         
         for user in users_data:
@@ -35,7 +35,7 @@ async def list_users():
 async def get_user_details(username: str):
     """获取特定用户详情及其提示词数量"""
     try:
-        users = await get_all_users()
+        users = await user_service.get_all_users()
         user_found = None
         for u in users:
             if u.username == username:

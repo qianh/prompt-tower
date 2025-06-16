@@ -8,7 +8,7 @@ app = FastAPI(
     title=settings.APP_NAME, version=settings.APP_VERSION, debug=settings.DEBUG
 )
 
-from backend.services.tag_service import sync_tags_from_prompts  # Corrected import for startup event
+from backend.services.unified_tag_service import tag_service
 
 
 # Startup event to sync tags
@@ -16,7 +16,7 @@ from backend.services.tag_service import sync_tags_from_prompts  # Corrected imp
 async def startup_sync_tags():
     try:
         print("Application startup: Attempting to sync tags from prompts...")
-        updated_tags = await sync_tags_from_prompts()
+        updated_tags = await tag_service.sync_tags_from_prompts()
         print(f"Tag sync complete. Total global tags: {len(updated_tags)}")
     except Exception as e:
         print(f"Error during startup tag sync: {e}")

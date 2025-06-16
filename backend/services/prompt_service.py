@@ -2,18 +2,26 @@ from typing import Any, Dict, List, Optional
 
 from fastapi import HTTPException
 
+from backend.config import settings
 from backend.models import Prompt, PromptCreate, PromptUpdate
-from backend.services.file_service import FileService
 from backend.utils.validators import (validate_content, validate_tags,
                                       validate_title)
-from backend.services import tag_service # Import the tag_service module
 
 
 class PromptService:
     """Prompt业务逻辑服务"""
 
     def __init__(self):
-        self.file_service = FileService()
+        if settings.USE_DATABASE:
+            from backend.services.db_service import DatabaseService
+            self.storage_service = DatabaseService()
+        else:
+            from backend.services.file_service import FileService
+            self.storage_service = FileService()
+        
+        # 导入标签服务
+        from backend.services.unified_tag_service import tag_service
+        self.tag_service = tag_service
 
     async def create_prompt(
         self, prompt_data: PromptCreate, creator_username: str
@@ -30,20 +38,20 @@ class PromptService:
             raise ValueError("标签格式不正确")
 
         # 检查标题是否已存在
-        existing = await self.file_service.read_prompt(prompt_data.title)
+        existing = await self.storage_service.read_prompt(prompt_data.title)
         if existing:
             raise ValueError(f"标题 '{prompt_data.title}' 已存在")
 
         # 保存prompt
         data_to_save = prompt_data.model_dump()
         data_to_save["creator_username"] = creator_username
-        saved_prompt = await self.file_service.save_prompt(data_to_save)
+        saved_prompt = await self.storage_service.save_prompt(data_to_save)
 
-        # 同步tags到全局tags.json
+        # 同步tags到全局标签系统
         if saved_prompt and saved_prompt.tags:
             for tag in saved_prompt.tags:
                 try:
-                    await tag_service.add_tag(tag) # Use tag_service.add_tag
+                    await self.tag_service.add_tag(tag)
                 except ValueError as e:
                     # Log or handle tag validation error if necessary, e.g., empty tag from prompt
                     print(f"Skipping invalid tag '{tag}' from prompt '{saved_prompt.title}': {e}")
@@ -57,7 +65,7 @@ class PromptService:
     ) -> Optional[Prompt]:
         """更新prompt，并将其中的tags同步到全局tags.json"""
         # 获取原始prompt
-        original_prompt = await self.file_service.read_prompt(title)
+        original_prompt = await self.storage_service.read_prompt(title)
         if not original_prompt:
             raise HTTPException(status_code=404, detail="Prompt不存在")
 
@@ -80,13 +88,13 @@ class PromptService:
         if "creator_username" in update_dict:
             del update_dict["creator_username"]
 
-        updated_prompt = await self.file_service.update_prompt(title, update_dict)
+        updated_prompt = await self.storage_service.update_prompt(title, update_dict)
 
-        # 同步tags到全局tags.json
+        # 同步tags到全局标签系统
         if updated_prompt and updated_prompt.tags:
             for tag in updated_prompt.tags:
                 try:
-                    await tag_service.add_tag(tag) # Use tag_service.add_tag
+                    await self.tag_service.add_tag(tag)
                 except ValueError as e:
                     print(f"Skipping invalid tag '{tag}' from prompt '{updated_prompt.title}': {e}")
                 except Exception as e:
@@ -96,20 +104,20 @@ class PromptService:
 
     async def delete_prompt(self, title: str, current_username: str) -> bool:
         """删除prompt，校验操作者是否为创建者"""
-        original_prompt = await self.file_service.read_prompt(title)
+        original_prompt = await self.storage_service.read_prompt(title)
         if not original_prompt:
             raise HTTPException(status_code=404, detail="Prompt不存在")
 
         if original_prompt.creator_username != current_username:
             raise HTTPException(status_code=403, detail="无权限删除此Prompt")
 
-        return await self.file_service.delete_prompt(title)
+        return await self.storage_service.delete_prompt(title)
 
     async def toggle_prompt_status(
         self, title: str, current_username: str
     ) -> Optional[Prompt]:
         """切换prompt状态，校验操作者是否为创建者"""
-        original_prompt = await self.file_service.read_prompt(title)
+        original_prompt = await self.storage_service.read_prompt(title)
         if not original_prompt:
             raise HTTPException(status_code=404, detail="Prompt不存在")
 
@@ -117,18 +125,18 @@ class PromptService:
             raise HTTPException(status_code=403, detail="无权限修改此Prompt的状态")
 
         new_status = "disabled" if original_prompt.status == "enabled" else "enabled"
-        return await self.file_service.update_prompt(title, {"status": new_status})
+        return await self.storage_service.update_prompt(title, {"status": new_status})
 
     async def get_enabled_prompts(self) -> List[Prompt]:
         """获取所有启用的prompts"""
-        all_prompts = await self.file_service.list_prompts()
+        all_prompts = await self.storage_service.list_prompts()
         return [p for p in all_prompts if p.status == "enabled"]
 
     async def get_all_tags_from_yaml_files(self) -> List[str]:
         """获取所有不重复的tags (从YAML文件，用于初始同步)
            This method is intended to be called at application startup.
         """
-        all_prompts = await self.file_service.list_prompts()
+        all_prompts = await self.storage_service.list_prompts()
         all_tags = set()
         for prompt in all_prompts:
             if prompt.tags:
@@ -139,7 +147,7 @@ class PromptService:
 
     async def increment_usage_count(self, title: str) -> Optional[Prompt]:
         """增加指定prompt的使用次数"""
-        prompt = await self.file_service.read_prompt(title)
+        prompt = await self.storage_service.read_prompt(title)
         if not prompt:
             # No need to raise HTTPException here if called internally, 
             # but good if this service method could also be called directly from API in future.
@@ -150,7 +158,7 @@ class PromptService:
         new_usage_count = prompt.usage_count + 1
         # We need to ensure that update_prompt can handle just updating usage_count
         # and that it correctly identifies the prompt by its title (which is the identifier here)
-        updated_prompt = await self.file_service.update_prompt(
+        updated_prompt = await self.storage_service.update_prompt(
             original_title_identifier=title, 
             update_data={"usage_count": new_usage_count}
         )
@@ -160,15 +168,26 @@ class PromptService:
 async def get_prompt_by_username_count(username: str) -> int:
     """获取指定用户创建的提示词数量"""
     try:
-        file_service = FileService()
-        prompts = await file_service.list_prompts()
+        from backend.config import settings
         
-        # 安全计数
-        count = 0
-        for prompt in prompts:
-            if hasattr(prompt, 'creator_username') and prompt.creator_username == username:
-                count += 1
-        
-        return count
-    except Exception:
+        if settings.USE_DATABASE:
+            from backend.services.db_service import DatabaseService
+            storage_service = DatabaseService()
+            return await storage_service.get_prompt_count_by_username(username)
+        else:
+            from backend.services.file_service import FileService
+            file_service = FileService()
+            prompts = await file_service.list_prompts()
+            
+            # 安全计数
+            count = 0
+            for prompt in prompts:
+                if hasattr(prompt, 'creator_username') and prompt.creator_username == username:
+                    count += 1
+            
+            return count
+    except Exception as e:
+        print(f"ERROR calculating prompt count for user '{username}': {type(e).__name__} - {str(e)}")
+        import traceback
+        traceback.print_exc()
         return 0

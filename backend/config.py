@@ -25,6 +25,11 @@ class Settings(BaseSettings):
     API_PREFIX: str = "/api/v1"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
 
+    # 数据库配置
+    DATABASE_URL: str = "postgresql://user:password@localhost/prompt_management"
+    ASYNC_DATABASE_URL: str = "postgresql+asyncpg://user:password@localhost/prompt_management"
+    USE_DATABASE: bool = False  # 是否使用数据库，False时使用文件存储
+
     # 文件存储配置
     PROMPT_TEMPLATE_DIR: Path = Path("prompt-template")
 
