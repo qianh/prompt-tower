@@ -1,3 +1,4 @@
+from urllib.parse import quote
 from typing import List, Dict, Any, Optional
 from backend.config import settings
 import logging
@@ -82,7 +83,8 @@ class SearchService:
         # Increment usage count by calling the backend API
         try:
             async with httpx.AsyncClient() as client:
-                increment_url = f"http://localhost:8010/prompts/{prompt.title}/increment-usage"
+                prompt_title_encoded = quote(prompt.title)
+                increment_url = f"http://localhost:8010/api/v1/prompts/{prompt_title_encoded}/increment-usage"
                 response = await client.post(increment_url)
                 response.raise_for_status()  # Raise an exception for bad status codes
                 logger.info(f"Successfully incremented usage count for prompt: {prompt.title}")
